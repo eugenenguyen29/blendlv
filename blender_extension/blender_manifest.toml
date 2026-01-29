@@ -1,0 +1,14 @@
+schema_version = "1.0.0"
+
+id = "trivesta_level"
+name = "Trivesta Level"
+version = "0.1.0"
+tagline = "Level design pipeline for Three.js worlds"
+maintainer = "Trivesta"
+type = "add-on"
+
+blender_version_min = "4.2.0"
+blender_version_max = "6.0.0"
+
+[permissions]
+files = "Import/export world meshes and manifest files"
