@@ -32,6 +32,10 @@ from blender_extension.utils.naming import (
     generate_instance_id,
     sanitize_name,
 )
+from blender_extension.utils.raycast import (
+    get_view3d_region,
+    raycast_from_mouse,
+)
 from blender_extension.utils.transforms import (
     get_bounding_box,
     get_custom_properties,
@@ -67,4 +71,7 @@ __all__ = [
     "build_collection_tree",
     "get_collection_path",
     "find_parent_collection",
+    # raycast
+    "get_view3d_region",
+    "raycast_from_mouse",
 ]

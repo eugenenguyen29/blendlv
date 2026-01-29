@@ -27,7 +27,7 @@
             ty
 
             # Node.js for viewer (when needed)
-            nodejs_22
+            nodejs_24
             nodePackages.pnpm
           ];
 

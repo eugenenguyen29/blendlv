@@ -24,5 +24,3 @@ dist/
 .idea/
 .vscode/
 *.swp
-
-.claude/

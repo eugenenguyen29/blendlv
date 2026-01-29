@@ -22,6 +22,31 @@ Reference `.claude/architecture/` for component context:
 
 - https://docs.blender.org/api/current/info_quickstart.html - when implement with bpy for API contract correctness and follow best practice.
 
+## Context7 API Lookup (REQUIRED)
+
+**ALWAYS** use Context7 MCP to verify Blender API usage before implementing:
+
+```
+Library ID: /websites/blender_api_current
+```
+
+Before writing or modifying any `bpy` code:
+1. Query Context7 with the specific API you're using (e.g., "AssetShelf properties", "Operator bl_options")
+2. Verify class attributes, method signatures, and available options
+3. Check for version-specific features or deprecations
+
+Example workflow:
+```
+# First: resolve-library-id if unsure of the library
+# Then: query-docs with specific question
+mcp__context7__query-docs(
+  libraryId="/websites/blender_api_current",
+  query="AssetShelf bl_default_show_names property"
+)
+```
+
+This prevents incorrect API usage and ensures compatibility with current Blender versions.
+
 
 ## Development
 
@@ -60,9 +85,9 @@ uv run ruff check --fix .  # auto-fix issues
 
 - **DO NOT** use `python3 -m py_compile` for syntax/type checking
 - **ALWAYS** use `uv run ruff check` for linting and code verification
-- **Use `uvx ty check`** for type checking (Astral's fast type checker)
+- **Use `uv run ty check`** for type checking (Astral's fast type checker)
 
 ```bash
 uv run ruff check .   # linting
-uvx ty check          # type checking
+uv run ty check          # type checking
 ```

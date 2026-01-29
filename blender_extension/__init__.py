@@ -19,6 +19,10 @@ import bpy
 from .core.properties import register_properties, unregister_properties
 from .core.registry import collect_classes
 from .entities import register_extractors
+from .panels.asset_browser import (
+    register_asset_browser_properties,
+    unregister_asset_browser_properties,
+)
 
 
 def register() -> None:
@@ -27,6 +31,7 @@ def register() -> None:
         for cls in collect_classes():
             bpy.utils.register_class(cls)
         register_properties()
+        register_asset_browser_properties()
         register_extractors()
     except Exception as e:
         # Clean up any partial registration
@@ -39,6 +44,11 @@ def register() -> None:
 
 def unregister() -> None:
     """Unregister extension properties and classes."""
+    try:
+        unregister_asset_browser_properties()
+    except Exception as e:
+        print(f"Warning: Failed to unregister asset browser properties: {e}")
+
     try:
         unregister_properties()
     except Exception as e:

@@ -28,3 +28,9 @@ ignore = ["E501"]
 python_version = "3.14"
 warn_return_any = true
 warn_unused_configs = true
+
+[tool.ty]
+# Blender modules (bpy, mathutils, etc.) are only available inside Blender runtime
+# Ignore unresolved imports for these modules
+[tool.ty.rules]
+unresolved-import = "ignore"
