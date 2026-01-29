@@ -2,24 +2,29 @@
 name = "trivesta-level"
 version = "0.1.0"
 description = "Blender extension for Three.js level design"
-requires-python = ">=3.11"
+requires-python = ">=3.14"
 dependencies = []
 
 [project.optional-dependencies]
 dev = [
-    "ruff>=0.1.0",
-    "mypy>=1.0.0",
+    "ruff>=0.14.0",
+    "mypy>=1.19.0",
+    "pytest>=8.0.0",
 ]
 
 [tool.ruff]
 line-length = 100
-target-version = "py311"
+target-version = "py314"
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "UP"]
 ignore = ["E501"]
 
+[tool.ruff.lint.per-file-ignores]
+# bl_info must come before imports in Blender extensions
+"blender_extension/__init__.py" = ["E402"]
+
 [tool.mypy]
-python_version = "3.11"
+python_version = "3.14"
 warn_return_any = true
 warn_unused_configs = true

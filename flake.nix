@@ -6,8 +6,14 @@
     flake-utils.url = "github:numtide/flake-utils";
   };
 
-  outputs = { self, nixpkgs, flake-utils }:
-    flake-utils.lib.eachDefaultSystem (system:
+  outputs =
+    {
+      self,
+      nixpkgs,
+      flake-utils,
+    }:
+    flake-utils.lib.eachDefaultSystem (
+      system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
       in
@@ -16,15 +22,12 @@
           packages = with pkgs; [
             # Python tooling
             uv
-            python312
+            python314
             ruff
 
             # Node.js for viewer (when needed)
             nodejs_22
             nodePackages.pnpm
-
-            # Blender
-            blender
           ];
 
           shellHook = ''

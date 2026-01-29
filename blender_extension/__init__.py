@@ -1,52 +1,54 @@
+"""Trivesta Level - Blender extension for Three.js level design.
+
+This extension provides tools for exporting Blender scenes to Three.js compatible
+formats, with support for asset separation, terrain detection, and collision meshes.
+"""
+
 bl_info = {
     "name": "Trivesta Level",
     "author": "Trivesta",
-    "version": (0, 1, 0),
+    "version": (2, 0, 0),
     "blender": (4, 2, 0),
-    "location": "Properties > Scene",
-    "description": "Level design pipeline for Three.js worlds",
+    "location": "Properties > Scene > Trivesta Level",
+    "description": "Export Three.js level geometry with asset separation",
     "category": "Import-Export",
 }
 
 import bpy
-from bpy.props import StringProperty, PointerProperty
-from bpy.types import PropertyGroup
 
-from .operators import export_world, export_manifest
-from .panels import main_panel
-
-
-class TrivestaLevelSettings(PropertyGroup):
-    export_path: StringProperty(
-        name="Export Path",
-        description="Directory for exported files",
-        default="//exports/",
-        subtype='DIR_PATH'
-    )
+from .core.properties import register_properties, unregister_properties
+from .core.registry import collect_classes
+from .entities import register_extractors
 
 
-classes = [
-    TrivestaLevelSettings,
-    export_world.TRIVESTA_OT_export_world,
-    export_manifest.TRIVESTA_OT_export_manifest,
-    main_panel.TRIVESTA_PT_main_panel,
-    main_panel.TRIVESTA_PT_export_panel,
-    main_panel.TRIVESTA_PT_assets_panel,
-]
+def register() -> None:
+    """Register extension classes and properties."""
+    try:
+        for cls in collect_classes():
+            bpy.utils.register_class(cls)
+        register_properties()
+        register_extractors()
+    except Exception as e:
+        # Clean up any partial registration
+        try:
+            unregister()
+        except Exception:
+            pass
+        raise RuntimeError(f"Failed to register Trivesta Level extension: {e}") from e
 
 
-def register():
-    for cls in classes:
-        bpy.utils.register_class(cls)
+def unregister() -> None:
+    """Unregister extension properties and classes."""
+    try:
+        unregister_properties()
+    except Exception as e:
+        print(f"Warning: Failed to unregister properties: {e}")
 
-    bpy.types.Scene.trivesta_level = PointerProperty(type=TrivestaLevelSettings)
-
-
-def unregister():
-    del bpy.types.Scene.trivesta_level
-
-    for cls in reversed(classes):
-        bpy.utils.unregister_class(cls)
+    for cls in reversed(collect_classes()):
+        try:
+            bpy.utils.unregister_class(cls)
+        except Exception as e:
+            print(f"Warning: Failed to unregister {cls.__name__}: {e}")
 
 
 if __name__ == "__main__":

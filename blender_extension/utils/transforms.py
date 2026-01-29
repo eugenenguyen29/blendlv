@@ -16,9 +16,16 @@ def get_object_transform(obj: bpy.types.Object) -> dict:
 
 
 def get_bounding_box(obj: bpy.types.Object) -> dict:
-    """Get world-space bounding box of an object."""
+    """Get world-space bounding box of an object.
+
+    Returns:
+        Dictionary with min/max corners and radius (distance from center
+        to furthest corner) in Three.js Y-up coordinate space.
+    """
+    import math
+
     if obj.type != 'MESH' or obj.data is None:
-        return {"min": [0, 0, 0], "max": [0, 0, 0]}
+        return {"min": [0, 0, 0], "max": [0, 0, 0], "radius": 0.0}
 
     # Get world-space bounding box corners
     bbox_corners = [obj.matrix_world @ Vector(corner) for corner in obj.bound_box]
@@ -34,7 +41,19 @@ def get_bounding_box(obj: bpy.types.Object) -> dict:
         max(-c.y for c in bbox_corners),
     ]
 
-    return {"min": min_corner, "max": max_corner}
+    # Calculate center and radius (distance from center to furthest corner)
+    center = [
+        (min_corner[0] + max_corner[0]) / 2,
+        (min_corner[1] + max_corner[1]) / 2,
+        (min_corner[2] + max_corner[2]) / 2,
+    ]
+    # Half-diagonal gives distance from center to corner
+    dx = max_corner[0] - center[0]
+    dy = max_corner[1] - center[1]
+    dz = max_corner[2] - center[2]
+    radius = math.sqrt(dx * dx + dy * dy + dz * dz)
+
+    return {"min": min_corner, "max": max_corner, "radius": radius}
 
 
 def get_custom_properties(obj: bpy.types.Object) -> dict:
