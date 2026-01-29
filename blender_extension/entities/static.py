@@ -25,6 +25,8 @@ Manual Test Checklist (Blender Python Console):
    >>> print(f"Position: {instance.position}")
 """
 
+from __future__ import annotations
+
 import bpy
 
 from blender_extension.core.data import Instance

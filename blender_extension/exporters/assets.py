@@ -35,6 +35,8 @@ Manual Test Checklist (Blender Python Console):
    ...     print(f"  {asset_id}: {len(insts)} instances")
 """
 
+from __future__ import annotations
+
 import os
 from typing import TYPE_CHECKING
 

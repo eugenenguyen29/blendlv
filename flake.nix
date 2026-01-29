@@ -24,6 +24,7 @@
             uv
             python314
             ruff
+            ty
 
             # Node.js for viewer (when needed)
             nodejs_22

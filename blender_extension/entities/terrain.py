@@ -35,6 +35,8 @@ Manual Test Checklist (Blender Python Console):
    >>> print(f"Entity type: {instance.entity_type}")  # Should print terrain
 """
 
+from __future__ import annotations
+
 import bpy
 
 from blender_extension.core.data import Instance

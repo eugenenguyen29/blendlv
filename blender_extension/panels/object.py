@@ -4,6 +4,8 @@ This module provides the Trivesta panel in the Properties > Object context
 for configuring per-object entity type and flags.
 """
 
+from __future__ import annotations
+
 from bpy.types import Panel
 
 from ..utils.naming import generate_asset_key

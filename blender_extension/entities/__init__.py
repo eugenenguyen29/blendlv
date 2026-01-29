@@ -53,6 +53,8 @@ Manual Test Checklist (Blender Python Console):
    >>> print(len(instances) + len(terrain) + len(collision))  # Should print 0
 """
 
+from __future__ import annotations
+
 import bpy
 
 from blender_extension.core.data import Instance

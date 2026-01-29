@@ -17,6 +17,8 @@ Manual Test Checklist (Blender Python Console):
    # Should create exports in the specified directory
 """
 
+from __future__ import annotations
+
 import bpy
 from bpy.types import Operator
 

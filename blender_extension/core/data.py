@@ -62,6 +62,8 @@ Run these tests after modifying this module to verify dataclasses work correctly
    >>> print(len(data.by_asset_id["asset_001"]))  # Should print 1
 """
 
+from __future__ import annotations
+
 from dataclasses import dataclass, field
 from typing import TypedDict
 

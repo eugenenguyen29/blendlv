@@ -5,6 +5,8 @@ on Blender Scene and Object data blocks. These are the primary interface
 for users to configure export behavior.
 """
 
+from __future__ import annotations
+
 import bpy
 from bpy.props import BoolProperty, EnumProperty, FloatProperty, PointerProperty, StringProperty
 from bpy.types import PropertyGroup

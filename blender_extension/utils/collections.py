@@ -38,6 +38,8 @@ Manual Test Checklist (Blender Python Console):
    ...     print(f"Parent of '{child.name}': {parent.name if parent else 'None'}")
 """
 
+from __future__ import annotations
+
 from collections.abc import Generator
 
 import bpy

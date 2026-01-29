@@ -30,6 +30,8 @@ Manual Test Checklist (Blender Python Console):
    >>> print(f"Preserved: {original == restored}")
 """
 
+from __future__ import annotations
+
 from typing import TYPE_CHECKING
 
 import bpy

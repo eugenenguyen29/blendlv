@@ -4,6 +4,8 @@ This module provides the Linked Assets child panel that displays a summary
 of linked objects from external .blend files, grouped by asset key.
 """
 
+from __future__ import annotations
+
 from bpy.types import Panel
 
 from ..utils.naming import generate_asset_key

@@ -20,6 +20,8 @@ Manual Test Checklist (Blender Python Console):
    ...     print(f"  {obj.name}")
 """
 
+from __future__ import annotations
+
 import os
 from typing import TYPE_CHECKING
 

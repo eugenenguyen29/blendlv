@@ -55,3 +55,14 @@ tests/
 uv run ruff check .        # check all files
 uv run ruff check --fix .  # auto-fix issues
 ```
+
+## Code Verification Rules
+
+- **DO NOT** use `python3 -m py_compile` for syntax/type checking
+- **ALWAYS** use `uv run ruff check` for linting and code verification
+- **Use `uvx ty check`** for type checking (Astral's fast type checker)
+
+```bash
+uv run ruff check .   # linting
+uvx ty check          # type checking
+```

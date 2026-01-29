@@ -4,6 +4,8 @@ This module defines all constants, enums, and default values used throughout
 the extension. No external dependencies required.
 """
 
+from __future__ import annotations
+
 # Entity type enum items for Blender EnumProperty
 # Format: (identifier, name, description)
 ENTITY_TYPES: list[tuple[str, str, str]] = [

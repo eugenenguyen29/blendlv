@@ -5,6 +5,8 @@ in the correct dependency order. PropertyGroups must be registered before
 classes that reference them.
 """
 
+from __future__ import annotations
+
 
 def collect_classes() -> list[type]:
     """Collect all registrable Blender classes in correct order.

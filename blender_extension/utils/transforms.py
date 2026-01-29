@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import bpy
 from mathutils import Vector
 

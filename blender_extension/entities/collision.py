@@ -55,6 +55,8 @@ Manual Test Checklist (Blender Python Console):
    >>> print(f"Island ID: {instance.custom_properties.get('island_id')}")  # Should print island_01
 """
 
+from __future__ import annotations
+
 import bpy
 
 from blender_extension.core.data import Instance

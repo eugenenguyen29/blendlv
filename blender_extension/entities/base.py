@@ -25,6 +25,8 @@ Manual Test Checklist (Blender Python Console):
    >>> print(ext._get_collection_path(obj))   # Should print path list
 """
 
+from __future__ import annotations
+
 from abc import ABC, abstractmethod
 
 import bpy

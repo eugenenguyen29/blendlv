@@ -26,6 +26,8 @@ Manual Test Checklist (Blender Python Console):
    >>> print(f"Subdir: {subdir}")
 """
 
+from __future__ import annotations
+
 import os
 
 import bpy

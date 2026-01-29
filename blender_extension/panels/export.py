@@ -4,6 +4,8 @@ This module provides the Export child panel with action buttons for
 exporting world geometry and manifest files.
 """
 
+from __future__ import annotations
+
 from bpy.types import Panel
 
 

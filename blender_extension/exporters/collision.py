@@ -36,6 +36,8 @@ Manual Test Checklist (Blender Python Console):
    ...     print(f"Object '{obj.name}' belongs to island: {island_id}")
 """
 
+from __future__ import annotations
+
 import os
 from typing import TYPE_CHECKING
 

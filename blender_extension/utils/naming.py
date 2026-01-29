@@ -27,6 +27,8 @@ Manual Test Checklist (Blender Python Console):
    >>> print(f"Instance ID: {instance_id}")
 """
 
+from __future__ import annotations
+
 import os
 import re
 import unicodedata

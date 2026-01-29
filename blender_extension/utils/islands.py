@@ -42,6 +42,8 @@ Manual Test Checklist (Blender Python Console):
    ...     print(f"Local coords: {local}")
 """
 
+from __future__ import annotations
+
 import bpy
 from mathutils import Vector
 

@@ -18,6 +18,8 @@ Manual Test Checklist (Blender Python Console):
    >>> restore_selection(bpy.context, saved)
 """
 
+from __future__ import annotations
+
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 

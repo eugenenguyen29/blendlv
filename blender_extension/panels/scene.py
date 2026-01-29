@@ -5,6 +5,8 @@ context. It displays export path and mode settings, and serves as the parent
 for the Export and Linked Assets child panels.
 """
 
+from __future__ import annotations
+
 from bpy.types import Panel
 
 

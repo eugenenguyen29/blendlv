@@ -32,6 +32,8 @@ Manual Test Checklist (Blender Python Console):
    ...     print(f"Exported: {path}")
 """
 
+from __future__ import annotations
+
 import os
 from typing import TYPE_CHECKING
 

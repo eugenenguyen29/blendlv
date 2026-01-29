@@ -43,6 +43,8 @@ Manual Test Checklist (Blender Python Console):
    ...         print(os.path.join(root, f))
 """
 
+from __future__ import annotations
+
 import os
 
 import bpy
