@@ -6,6 +6,9 @@ Simple asset placement from Asset Shelf to 3D viewport.
 from __future__ import annotations
 
 import os
+import time
+from dataclasses import dataclass
+from enum import Enum, auto
 from typing import TYPE_CHECKING
 
 import bpy
@@ -15,6 +18,35 @@ from mathutils import Vector
 
 if TYPE_CHECKING:
     from bpy.types import Context, Event
+
+
+class PlacementError(Enum):
+    """Types of placement errors."""
+
+    INVALID_PATH = "invalid_path"
+    UNSUPPORTED_TYPE = "unsupported_type"
+    LIBRARY_NOT_FOUND = "library_not_found"
+    FILE_NOT_FOUND = "file_not_found"
+    ASSET_NOT_FOUND = "asset_not_found"
+    LINK_FAILED = "link_failed"
+
+
+@dataclass
+class PlacementResult:
+    """Result of a placement operation."""
+
+    success: bool
+    object: bpy.types.Object | None = None
+    error: PlacementError | None = None
+    message: str = ""
+
+
+class DragState(Enum):
+    """Drag operator states."""
+
+    IDLE = auto()
+    DRAGGING = auto()  # Modal active, no object yet
+    OBJECT_CREATED = auto()  # Object exists, following mouse
 
 
 DEBUG = True
@@ -65,7 +97,7 @@ def place_asset(
     library_name: str,
     relative_path: str,
     location: Vector,
-) -> bpy.types.Object | None:
+) -> PlacementResult:
     """Place an asset at the specified location.
 
     Args:
@@ -75,15 +107,16 @@ def place_asset(
         location: World location to place at
 
     Returns:
-        The placed object or None
+        PlacementResult with success status, object, and error details
     """
     debug(f"place_asset: library={library_name}, path={relative_path}")
 
     # Parse relative path: "cube2.blend/Object/Cube.001"
     parts = relative_path.split("/")
     if len(parts) < 3:
-        debug(f"  Invalid path format: {relative_path}")
-        return None
+        msg = f"Invalid path format: {relative_path}"
+        debug(f"  {msg}")
+        return PlacementResult(success=False, error=PlacementError.INVALID_PATH, message=msg)
 
     asset_name = parts[-1]
     id_type = parts[-2]  # "Object", "Collection", etc.
@@ -93,22 +126,38 @@ def place_asset(
 
     # Only handle Objects for now
     if id_type != "Object":
-        debug(f"  Unsupported id_type: {id_type}")
-        return None
+        msg = f"Unsupported id_type: {id_type}"
+        debug(f"  {msg}")
+        return PlacementResult(success=False, error=PlacementError.UNSUPPORTED_TYPE, message=msg)
 
     # Get library path and build full blend file path
     library_path = get_library_path(library_name)
     if not library_path:
-        debug(f"  Library not found: {library_name}")
-        return None
+        msg = f"Library not found: {library_name}"
+        debug(f"  {msg}")
+        return PlacementResult(success=False, error=PlacementError.LIBRARY_NOT_FOUND, message=msg)
 
     full_blend_path = os.path.join(library_path, blend_file)
     debug(f"  Full path: {full_blend_path}")
 
+    # Check file exists before linking
+    if not os.path.exists(full_blend_path):
+        msg = f"File not found: {full_blend_path}"
+        debug(f"  {msg}")
+        return PlacementResult(success=False, error=PlacementError.FILE_NOT_FOUND, message=msg)
+
     # Link the object
-    linked_obj = link_object_from_blend(full_blend_path, asset_name)
+    try:
+        linked_obj = link_object_from_blend(full_blend_path, asset_name)
+    except Exception as e:
+        msg = str(e)
+        debug(f"  Link failed: {msg}")
+        return PlacementResult(success=False, error=PlacementError.LINK_FAILED, message=msg)
+
     if not linked_obj:
-        return None
+        msg = f"Asset not found after linking: {asset_name}"
+        debug(f"  {msg}")
+        return PlacementResult(success=False, error=PlacementError.ASSET_NOT_FOUND, message=msg)
 
     # Create an instance (copy) of the linked object
     new_obj = linked_obj.copy()
@@ -121,7 +170,7 @@ def place_asset(
     context.view_layer.objects.active = new_obj
 
     debug(f"  Placed at {location}")
-    return new_obj
+    return PlacementResult(success=True, object=new_obj)
 
 
 MIN_PLACEMENT_DISTANCE = 1.0  # Minimum distance from camera to place objects
@@ -227,18 +276,18 @@ class TRIVESTA_OT_place_asset(Operator):
 
         # Click is from Asset Shelf, so use 3D cursor for placement
         location = context.scene.cursor.location.copy()
-        obj = place_asset(
+        result = place_asset(
             context,
             self.asset_library_identifier,
             self.relative_asset_identifier,
             location,
         )
 
-        if obj:
-            self.report({'INFO'}, f"Placed: {obj.name}")
+        if result.success:
+            self.report({'INFO'}, f"Placed: {result.object.name}")
             return {'FINISHED'}
 
-        self.report({'ERROR'}, "Failed to place asset")
+        self.report({'ERROR'}, result.message or "Failed to place asset")
         return {'CANCELLED'}
 
 
@@ -254,9 +303,35 @@ class TRIVESTA_OT_drag_asset(Operator):
     asset_library_identifier: StringProperty(options={'HIDDEN', 'SKIP_SAVE'})  # type: ignore
     relative_asset_identifier: StringProperty(options={'HIDDEN', 'SKIP_SAVE'})  # type: ignore
 
+    # State management
+    _state: DragState = DragState.IDLE
     _obj: bpy.types.Object | None = None
     _library: str = ""
     _path: str = ""
+
+    # Performance optimization
+    _last_raycast_time: float = 0.0
+    _raycast_interval: float = 0.016  # ~60fps (16ms between raycasts)
+    _last_location: Vector | None = None
+    _position_threshold: float = 0.01  # Minimum movement to trigger update
+
+    def _should_raycast(self) -> bool:
+        """Check if enough time has passed for a new raycast."""
+        now = time.perf_counter()
+        if now - self._last_raycast_time >= self._raycast_interval:
+            self._last_raycast_time = now
+            return True
+        return False
+
+    def _position_changed(self, new_loc: Vector) -> bool:
+        """Check if position changed enough to warrant update."""
+        if self._last_location is None:
+            return True
+        try:
+            delta = (new_loc - self._last_location).length
+            return delta > self._position_threshold
+        except (TypeError, AttributeError):
+            return True
 
     def invoke(self, context: Context, event: Event) -> set[str]:
         debug(f"drag_asset.invoke: lib={self.asset_library_identifier}, path={self.relative_asset_identifier}")
@@ -264,51 +339,131 @@ class TRIVESTA_OT_drag_asset(Operator):
         if not self.relative_asset_identifier:
             return {'CANCELLED'}
 
-        # Store asset info for later - don't create object yet
+        # Initialize state
+        self._state = DragState.DRAGGING
         self._library = self.asset_library_identifier
         self._path = self.relative_asset_identifier
         self._obj = None
+        self._last_raycast_time = 0.0
+        self._last_location = None
 
         context.window_manager.modal_handler_add(self)
         context.window.cursor_set('CROSSHAIR')
         return {'RUNNING_MODAL'}
 
     def modal(self, context: Context, event: Event) -> set[str]:
-        # Check if mouse is over 3D view (exclude dragged object from raycast)
-        loc = get_mouse_location(context, event, exclude=self._obj)
+        """Handle modal events with state machine."""
+        try:
+            # Edge case: Mode changed during drag
+            if context.mode != 'OBJECT':
+                debug(f"Mode changed to {context.mode}, cancelling drag")
+                return self._cancel(context)
 
+            # Edge case: Window focus lost
+            if event.type == 'WINDOW_DEACTIVATE':
+                debug("Window deactivated during drag")
+                return self._cancel(context)
+
+            # Dispatch to state handler
+            if self._state == DragState.DRAGGING:
+                return self._handle_dragging(context, event)
+            elif self._state == DragState.OBJECT_CREATED:
+                return self._handle_object_created(context, event)
+
+            return {'RUNNING_MODAL'}
+
+        except Exception as e:
+            debug(f"Modal error: {e}")
+            self._cleanup(context)
+            return {'CANCELLED'}
+
+    def _handle_dragging(self, context: Context, event: Event) -> set[str]:
+        """Handle events when no object exists yet."""
+        loc = get_mouse_location(context, event, exclude=None)
+
+        if event.type == 'MOUSEMOVE' and loc:
+            # Create object on first valid location
+            result = place_asset(context, self._library, self._path, loc)
+            if result.success:
+                self._obj = result.object
+                self._state = DragState.OBJECT_CREATED
+                context.window.cursor_set('NONE')
+                debug("Object created, transitioning to OBJECT_CREATED state")
+            else:
+                debug(f"Placement failed: {result.message}")
+            return {'RUNNING_MODAL'}
+
+        # Cancel events
+        if event.type in {'RIGHTMOUSE', 'ESC'}:
+            return self._cancel(context)
+
+        # Left release before object created = cancel
+        if event.type == 'LEFTMOUSE' and event.value == 'RELEASE':
+            return self._cancel(context)
+
+        return {'RUNNING_MODAL'}
+
+    def _handle_object_created(self, context: Context, event: Event) -> set[str]:
+        """Handle events when object exists and follows mouse."""
         if event.type == 'MOUSEMOVE':
-            if loc:
-                # Mouse is over 3D view
-                if self._obj is None:
-                    # First time entering 3D view - create the object
-                    debug("Mouse entered 3D view - creating object")
-                    self._obj = place_asset(context, self._library, self._path, loc)
-                    if self._obj:
-                        context.window.cursor_set('NONE')
-                elif self._obj:
-                    # Update position
-                    self._obj.location = loc
-                context.area.tag_redraw() if context.area else None
+            # Throttle raycasts for performance
+            if self._should_raycast():
+                loc = get_mouse_location(context, event, exclude=self._obj)
+                if loc and self._obj:
+                    # Only update if position changed significantly
+                    if self._position_changed(loc):
+                        self._obj.location = loc
+                        self._last_location = loc
+                        # Only redraw when position actually changes
+                        if context.area:
+                            context.area.tag_redraw()
             return {'RUNNING_MODAL'}
 
         if event.type == 'LEFTMOUSE' and event.value == 'RELEASE':
-            context.window.cursor_set('DEFAULT')
-            if self._obj:
-                debug(f"Placed at {self._obj.location}")
-                self._obj = None
-                return {'FINISHED'}
-            # Released outside 3D view - cancel
-            return {'CANCELLED'}
+            return self._finish(context)
 
         if event.type in {'RIGHTMOUSE', 'ESC'}:
-            context.window.cursor_set('DEFAULT')
-            if self._obj:
-                bpy.data.objects.remove(self._obj, do_unlink=True)
-            self._obj = None
-            return {'CANCELLED'}
+            return self._cancel(context)
 
         return {'RUNNING_MODAL'}
+
+    def _finish(self, context: Context) -> set[str]:
+        """Complete placement successfully."""
+        context.window.cursor_set('DEFAULT')
+        if self._obj:
+            debug(f"Placed at {self._obj.location}")
+        self._reset_state()
+        return {'FINISHED'}
+
+    def _cancel(self, context: Context) -> set[str]:
+        """Cancel placement and cleanup."""
+        self._cleanup(context)
+        return {'CANCELLED'}
+
+    def _cleanup(self, context: Context) -> None:
+        """Clean up operator state and remove preview object."""
+        try:
+            context.window.cursor_set('DEFAULT')
+        except Exception:
+            pass  # Window may be invalid
+
+        if self._obj:
+            try:
+                bpy.data.objects.remove(self._obj, do_unlink=True)
+                debug("Preview object removed")
+            except Exception as e:
+                debug(f"Cleanup warning: {e}")
+
+        self._reset_state()
+
+    def _reset_state(self) -> None:
+        """Reset all state variables."""
+        self._state = DragState.IDLE
+        self._obj = None
+        self._library = ""
+        self._path = ""
+        self._last_raycast_time = 0.0
+        self._last_location = None
 
 
 __all__ = ["TRIVESTA_OT_place_asset", "TRIVESTA_OT_drag_asset"]
