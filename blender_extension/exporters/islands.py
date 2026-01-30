@@ -2,34 +2,6 @@
 
 This module handles exporting island terrain meshes to separate GLB files.
 Each island gets its own terrain GLB file in the islands/ subdirectory.
-
-Manual Test Checklist (Blender Python Console):
------------------------------------------------
-1. Test export_islands:
-   >>> from blender_extension.exporters.islands import export_islands
-   >>> from blender_extension.utils.islands import detect_islands
-   >>> import bpy
-   >>> islands = detect_islands(bpy.context.scene)
-   >>> files = export_islands(islands, "/tmp/test_export/", bpy.context)
-   >>> print(f"Exported {len(files)} island files")
-   >>> for f in files:
-   ...     print(f"  {f}")
-
-2. Test empty islands:
-   >>> from blender_extension.exporters.islands import export_islands
-   >>> import bpy
-   >>> files = export_islands({}, "/tmp/test_export/", bpy.context)
-   >>> print(f"Files: {len(files)}")  # Should be 0
-
-3. Test single island export:
-   >>> from blender_extension.exporters.islands import export_island_terrain
-   >>> from blender_extension.utils.islands import detect_islands
-   >>> import bpy
-   >>> islands = detect_islands(bpy.context.scene)
-   >>> if islands:
-   ...     island = list(islands.values())[0]
-   ...     path = export_island_terrain(island, "/tmp/test_export/islands", bpy.context)
-   ...     print(f"Exported: {path}")
 """
 
 from __future__ import annotations

@@ -3,63 +3,6 @@
 This module defines dataclasses that represent export data structures.
 These are pure Python dataclasses with no Blender dependencies, making
 them easy to test and serialize.
-
-Manual Test Checklist (Blender Python Console):
------------------------------------------------
-Run these tests after modifying this module to verify dataclasses work correctly.
-
-1. Test imports and TypedDicts:
-   >>> from blender_extension.core.data import BoundingBox, CollectionNodeDict
-   >>> bbox: BoundingBox = {"min": [0.0, 0.0, 0.0], "max": [1.0, 1.0, 1.0], "radius": 0.87}
-   >>> print(bbox["min"])  # Should print [0.0, 0.0, 0.0]
-
-2. Test Instance creation with typed bounding_box:
-   >>> from blender_extension.core.data import Instance
-   >>> inst = Instance(
-   ...     id="test_001",
-   ...     name="TestObject",
-   ...     asset_id="test_asset",
-   ...     entity_type="static",
-   ...     position=(0.0, 0.0, 0.0),
-   ...     rotation=(0.0, 0.0, 0.0, 1.0),
-   ...     scale=(1.0, 1.0, 1.0),
-   ...     bounding_box={"min": [0.0, 0.0, 0.0], "max": [1.0, 1.0, 1.0], "radius": 0.87},
-   ...     collection_path=["Scene"],
-   ... )
-   >>> print(inst.bounding_box["min"])  # Should print [0.0, 0.0, 0.0]
-
-3. Test CollectionNode.to_dict() return type:
-   >>> from blender_extension.core.data import CollectionNode
-   >>> node = CollectionNode(name="TestCollection")
-   >>> result = node.to_dict()
-   >>> print(result["name"])  # Should print "TestCollection"
-   >>> print(result["children"])  # Should print {}
-   >>> print(result["instances"])  # Should print []
-
-4. Test Island with typed bounds:
-   >>> from blender_extension.core.data import Island
-   >>> island = Island(
-   ...     id="island_001",
-   ...     name="TestIsland",
-   ...     world_position=(0.0, 0.0, 0.0),
-   ...     world_rotation=(0.0, 0.0, 0.0, 1.0),
-   ...     bounds={"min": [-10.0, 0.0, -10.0], "max": [10.0, 5.0, 10.0], "radius": 11.18},
-   ... )
-   >>> print(island.bounds["max"])  # Should print [10.0, 5.0, 10.0]
-
-5. Test ExportData with indices:
-   >>> from blender_extension.core.data import ExportData, Instance
-   >>> data = ExportData()
-   >>> inst = Instance(
-   ...     id="test_001", name="Test", asset_id="asset_001",
-   ...     entity_type="static", position=(0.0, 0.0, 0.0),
-   ...     rotation=(0.0, 0.0, 0.0, 1.0), scale=(1.0, 1.0, 1.0),
-   ...     bounding_box={"min": [0.0, 0.0, 0.0], "max": [1.0, 1.0, 1.0], "radius": 0.87},
-   ...     collection_path=["Scene"],
-   ... )
-   >>> data.instances.append(inst)
-   >>> data.build_indices()
-   >>> print(len(data.by_asset_id["asset_001"]))  # Should print 1
 """
 
 from __future__ import annotations

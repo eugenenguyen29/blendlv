@@ -5,41 +5,6 @@ scenes and computing their bounds and origins for export to Three.js.
 
 Islands are identified by convention: top-level collections starting with
 "Island_" are treated as separate island chunks in the game world.
-
-Manual Test Checklist (Blender Python Console):
------------------------------------------------
-1. Test detect_islands (requires Island_* collections in scene):
-   >>> from blender_extension.utils.islands import detect_islands
-   >>> import bpy
-   >>> islands = detect_islands(bpy.context.scene)
-   >>> print(f"Found {len(islands)} islands")
-   >>> for island_id, island in islands.items():
-   ...     print(f"  {island_id}: {len(island.instances)} objects")
-
-2. Test get_collection_origin:
-   >>> from blender_extension.utils.islands import get_collection_origin
-   >>> import bpy
-   >>> col = bpy.data.collections.get("Island_01")
-   >>> if col:
-   ...     origin = get_collection_origin(col)
-   ...     print(f"Origin: {origin}")
-
-3. Test calculate_collection_bounds:
-   >>> from blender_extension.utils.islands import calculate_collection_bounds
-   >>> import bpy
-   >>> col = bpy.data.collections.get("Island_01")
-   >>> if col:
-   ...     bounds = calculate_collection_bounds(col)
-   ...     print(f"Bounds: {bounds}")
-
-4. Test to_local_coords:
-   >>> from blender_extension.utils.islands import to_local_coords, detect_islands
-   >>> import bpy
-   >>> islands = detect_islands(bpy.context.scene)
-   >>> if islands:
-   ...     island = list(islands.values())[0]
-   ...     local = to_local_coords((10.0, 5.0, -3.0), island)
-   ...     print(f"Local coords: {local}")
 """
 
 from __future__ import annotations

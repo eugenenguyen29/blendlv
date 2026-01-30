@@ -3,46 +3,6 @@
 This module handles serialization and writing of the v2.0 manifest format.
 The manifest contains all metadata needed by the Three.js runtime to load
 and instantiate the game world.
-
-Manual Test Checklist (Blender Python Console):
------------------------------------------------
-1. Test ManifestSerializer:
-   >>> from blender_extension.exporters.manifest import ManifestSerializer
-   >>> from blender_extension.core.data import ExportData
-   >>> import bpy
-   >>> serializer = ManifestSerializer()
-   >>> data = ExportData()
-   >>> manifest = serializer.serialize(data, bpy.context)
-   >>> print(f"Version: {manifest['version']}")
-   >>> print(f"Keys: {list(manifest.keys())}")
-
-2. Test with populated data:
-   >>> from blender_extension.exporters.manifest import ManifestSerializer
-   >>> from blender_extension.entities import register_extractors, extract_all
-   >>> from blender_extension.utils.islands import detect_islands
-   >>> from blender_extension.utils.collections import build_collection_tree
-   >>> from blender_extension.core.data import ExportData
-   >>> import bpy
-   >>> register_extractors()
-   >>> instances, terrain, collision = extract_all(bpy.context)
-   >>> data = ExportData(
-   ...     instances=instances,
-   ...     terrain_objects=terrain,
-   ...     islands=detect_islands(bpy.context.scene),
-   ...     collection_tree=build_collection_tree(bpy.context.scene),
-   ... )
-   >>> data.build_indices()
-   >>> serializer = ManifestSerializer()
-   >>> manifest = serializer.serialize(data, bpy.context)
-   >>> print(f"Instances: {len(manifest['instances'])}")
-
-3. Test write_manifest:
-   >>> from blender_extension.exporters.manifest import write_manifest
-   >>> from blender_extension.core.data import ExportData
-   >>> import bpy
-   >>> data = ExportData()
-   >>> success = write_manifest(data, "/tmp/test_export/", bpy.context)
-   >>> print(f"Write success: {success}")
 """
 
 from __future__ import annotations

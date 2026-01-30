@@ -3,37 +3,6 @@
 This module handles exporting collision meshes to separate GLB files.
 Each island can have its own collision mesh exported to the collision/
 subdirectory.
-
-Manual Test Checklist (Blender Python Console):
------------------------------------------------
-1. Test export_collision:
-   >>> from blender_extension.exporters.collision import export_collision
-   >>> from blender_extension.entities import register_extractors, extract_all
-   >>> from blender_extension.utils.islands import detect_islands
-   >>> import bpy
-   >>> register_extractors()
-   >>> _, _, collision_objs = extract_all(bpy.context)
-   >>> islands = detect_islands(bpy.context.scene)
-   >>> paths = export_collision(collision_objs, islands, "/tmp/test_export/", bpy.context)
-   >>> print(f"Exported {len(paths)} collision files")
-   >>> for island_id, path in paths.items():
-   ...     print(f"  {island_id}: {path}")
-
-2. Test empty collision:
-   >>> from blender_extension.exporters.collision import export_collision
-   >>> import bpy
-   >>> paths = export_collision([], {}, "/tmp/test_export/", bpy.context)
-   >>> print(f"Paths: {len(paths)}")  # Should be 0
-
-3. Test collision object detection:
-   >>> from blender_extension.exporters.collision import find_island_for_object
-   >>> from blender_extension.utils.islands import detect_islands
-   >>> import bpy
-   >>> islands = detect_islands(bpy.context.scene)
-   >>> obj = bpy.context.object
-   >>> if obj:
-   ...     island_id = find_island_for_object(obj, islands, bpy.context.scene)
-   ...     print(f"Object '{obj.name}' belongs to island: {island_id}")
 """
 
 from __future__ import annotations

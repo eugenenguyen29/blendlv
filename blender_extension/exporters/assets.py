@@ -3,36 +3,6 @@
 This module handles exporting unique assets (shared geometry) to separate
 GLB files. Assets are grouped by asset_id, and each unique asset is exported
 once to the assets/ subdirectory.
-
-Manual Test Checklist (Blender Python Console):
------------------------------------------------
-1. Test export_assets with instances:
-   >>> from blender_extension.exporters.assets import export_assets
-   >>> from blender_extension.entities import register_extractors, extract_all
-   >>> from blender_extension.core.data import ExportData
-   >>> import bpy
-   >>> register_extractors()
-   >>> instances, terrain, collision = extract_all(bpy.context)
-   >>> assets = export_assets(instances, "/tmp/test_export/", bpy.context)
-   >>> print(f"Exported {len(assets)} assets")
-   >>> for key, asset_def in assets.items():
-   ...     print(f"  {key}: {asset_def.file}")
-
-2. Test empty instances list:
-   >>> from blender_extension.exporters.assets import export_assets
-   >>> import bpy
-   >>> assets = export_assets([], "/tmp/test_export/", bpy.context)
-   >>> print(f"Assets: {len(assets)}")  # Should be 0
-
-3. Test asset grouping:
-   >>> from blender_extension.exporters.assets import group_by_asset_id
-   >>> from blender_extension.entities import register_extractors, extract_all
-   >>> import bpy
-   >>> register_extractors()
-   >>> instances, _, _ = extract_all(bpy.context)
-   >>> groups = group_by_asset_id(instances)
-   >>> for asset_id, insts in groups.items():
-   ...     print(f"  {asset_id}: {len(insts)} instances")
 """
 
 from __future__ import annotations

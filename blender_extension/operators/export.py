@@ -2,19 +2,6 @@
 
 This module provides a single operator that handles all export operations,
 delegating to the appropriate exporter based on scene settings.
-
-Manual Test Checklist (Blender Python Console):
------------------------------------------------
-1. Test operator exists:
-   >>> import bpy
-   >>> hasattr(bpy.ops.trivesta, 'export')
-   True
-
-2. Test export:
-   >>> import bpy
-   >>> bpy.context.scene.trivesta.export_path = "//exports/test/"
-   >>> bpy.ops.trivesta.export()
-   # Should create exports in the specified directory
 """
 
 from __future__ import annotations

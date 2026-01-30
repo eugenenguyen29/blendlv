@@ -3,56 +3,6 @@
 This module provides the CollisionExtractor class for extracting data from
 collision meshes. Collision meshes are simplified geometry used for physics
 and collision detection, typically invisible to players.
-
-Manual Test Checklist (Blender Python Console):
------------------------------------------------
-1. Test collision detection via property:
-   >>> from blender_extension.entities.collision import CollisionExtractor
-   >>> import bpy
-   >>> ext = CollisionExtractor()
-   >>> bpy.ops.mesh.primitive_cube_add()
-   >>> obj = bpy.context.object
-   >>> obj.trivesta.is_collision = True
-   >>> print(ext.matches(obj))  # Should print True
-
-2. Test collision detection via name suffix:
-   >>> from blender_extension.entities.collision import CollisionExtractor
-   >>> import bpy
-   >>> ext = CollisionExtractor()
-   >>> bpy.ops.mesh.primitive_cube_add()
-   >>> obj = bpy.context.object
-   >>> obj.name = "Wall_collision"
-   >>> print(ext.matches(obj))  # Should print True
-
-3. Test collision detection via collection:
-   >>> from blender_extension.entities.collision import CollisionExtractor
-   >>> import bpy
-   >>> ext = CollisionExtractor()
-   >>> # Create Collision collection and add object
-   >>> col = bpy.data.collections.new("Collision")
-   >>> bpy.context.scene.collection.children.link(col)
-   >>> bpy.ops.mesh.primitive_cube_add()
-   >>> obj = bpy.context.object
-   >>> col.objects.link(obj)
-   >>> bpy.context.scene.collection.objects.unlink(obj)
-   >>> print(ext.matches(obj))  # Should print True
-
-4. Test extraction with island_id:
-   >>> from blender_extension.entities.collision import CollisionExtractor
-   >>> import bpy
-   >>> ext = CollisionExtractor()
-   >>> # Create Island_01 > Collision hierarchy
-   >>> island_col = bpy.data.collections.new("Island_01")
-   >>> collision_col = bpy.data.collections.new("Collision")
-   >>> bpy.context.scene.collection.children.link(island_col)
-   >>> island_col.children.link(collision_col)
-   >>> bpy.ops.mesh.primitive_cube_add()
-   >>> obj = bpy.context.object
-   >>> collision_col.objects.link(obj)
-   >>> bpy.context.scene.collection.objects.unlink(obj)
-   >>> obj.trivesta.is_collision = True
-   >>> instance = ext.extract(obj)
-   >>> print(f"Island ID: {instance.custom_properties.get('island_id')}")  # Should print island_01
 """
 
 from __future__ import annotations

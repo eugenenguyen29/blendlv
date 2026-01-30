@@ -13,44 +13,6 @@ Extractor Precedence:
     1. CollisionExtractor - Collision meshes (highest priority)
     2. TerrainExtractor - Terrain/ground meshes
     3. StaticExtractor - Default fallback for regular meshes
-
-Manual Test Checklist (Blender Python Console):
------------------------------------------------
-1. Test extractor registration:
-   >>> from blender_extension.entities import register_extractors, get_extractor
-   >>> import bpy
-   >>> register_extractors()
-   >>> obj = bpy.context.object
-   >>> ext = get_extractor(obj)
-   >>> print(f"Matched: {ext.entity_type if ext else 'None'}")
-
-2. Test collision takes precedence:
-   >>> from blender_extension.entities import register_extractors, get_extractor
-   >>> import bpy
-   >>> register_extractors()
-   >>> bpy.ops.mesh.primitive_cube_add()
-   >>> obj = bpy.context.object
-   >>> obj.name = "Wall_collision"
-   >>> ext = get_extractor(obj)
-   >>> print(f"Type: {ext.entity_type}")  # Should print "collision"
-
-3. Test extract_all:
-   >>> from blender_extension.entities import register_extractors, extract_all
-   >>> import bpy
-   >>> register_extractors()
-   >>> instances, terrain, collision = extract_all(bpy.context)
-   >>> print(f"Instances: {len(instances)}")
-   >>> print(f"Terrain: {len(terrain)}")
-   >>> print(f"Collision: {len(collision)}")
-
-4. Test empty scene:
-   >>> from blender_extension.entities import register_extractors, extract_all
-   >>> import bpy
-   >>> bpy.ops.object.select_all(action='SELECT')
-   >>> bpy.ops.object.delete()
-   >>> register_extractors()
-   >>> instances, terrain, collision = extract_all(bpy.context)
-   >>> print(len(instances) + len(terrain) + len(collision))  # Should print 0
 """
 
 from __future__ import annotations

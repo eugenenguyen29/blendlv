@@ -17,30 +17,6 @@ Architecture:
     - collision.py: Collision mesh export
     - world.py: World/global elements
     - manifest.py: v2.0 manifest serialization
-
-Manual Test Checklist (Blender Python Console):
------------------------------------------------
-1. Test full export:
-   >>> from blender_extension.exporters import export_world
-   >>> import bpy
-   >>> result = export_world(bpy.context, "/tmp/test_export/")
-   >>> print(f"Success: {result.success}")
-   >>> print(f"Message: {result.message}")
-   >>> print(f"Files: {len(result.files_created)}")
-
-2. Test export_world returns ExportResult:
-   >>> from blender_extension.exporters import export_world, ExportResult
-   >>> import bpy
-   >>> result = export_world(bpy.context, "/tmp/test/")
-   >>> assert isinstance(result, ExportResult)
-   >>> print(f"Has export_data: {result.export_data is not None}")
-
-3. Verify output structure:
-   >>> import os
-   >>> export_dir = "/tmp/test_export/"
-   >>> for root, dirs, files in os.walk(export_dir):
-   ...     for f in files:
-   ...         print(os.path.join(root, f))
 """
 
 from __future__ import annotations

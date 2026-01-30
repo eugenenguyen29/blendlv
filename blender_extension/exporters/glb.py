@@ -2,32 +2,6 @@
 
 This module provides low-level GLB export functionality using Blender's
 glTF exporter with correct settings for Three.js (Y-up coordinate system).
-
-Manual Test Checklist (Blender Python Console):
------------------------------------------------
-1. Test export_objects_to_glb:
-   >>> from blender_extension.exporters.glb import export_objects_to_glb
-   >>> import bpy
-   >>> objs = [o for o in bpy.context.scene.objects if o.type == 'MESH'][:2]
-   >>> success = export_objects_to_glb(objs, "/tmp/test_multi.glb", bpy.context)
-   >>> print(f"Export success: {success}")
-
-2. Test export_object_at_origin:
-   >>> from blender_extension.exporters.glb import export_object_at_origin
-   >>> import bpy
-   >>> obj = bpy.context.object
-   >>> if obj and obj.type == 'MESH':
-   ...     success = export_object_at_origin(obj, "/tmp/test_origin.glb", bpy.context)
-   ...     print(f"Export success: {success}")
-
-3. Test selection preservation:
-   >>> from blender_extension.exporters.glb import export_objects_to_glb
-   >>> import bpy
-   >>> original = [o.name for o in bpy.context.selected_objects]
-   >>> objs = [o for o in bpy.context.scene.objects if o.type == 'MESH'][:1]
-   >>> export_objects_to_glb(objs, "/tmp/test.glb", bpy.context)
-   >>> restored = [o.name for o in bpy.context.selected_objects]
-   >>> print(f"Preserved: {original == restored}")
 """
 
 from __future__ import annotations

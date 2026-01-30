@@ -3,39 +3,6 @@
 This module provides functions for traversing and querying Blender's
 collection hierarchy, building tree representations, and finding
 collection paths for objects.
-
-Manual Test Checklist (Blender Python Console):
------------------------------------------------
-1. Test get_collection_objects_recursive:
-   >>> from blender_extension.utils.collections import get_collection_objects_recursive
-   >>> import bpy
-   >>> col = bpy.context.scene.collection
-   >>> objects = list(get_collection_objects_recursive(col))
-   >>> print(f"Found {len(objects)} objects")
-
-2. Test build_collection_tree:
-   >>> from blender_extension.utils.collections import build_collection_tree
-   >>> import bpy
-   >>> tree = build_collection_tree(bpy.context.scene)
-   >>> print(f"Root: {tree.name}")
-   >>> print(f"Children: {list(tree.children.keys())}")
-
-3. Test get_collection_path:
-   >>> from blender_extension.utils.collections import get_collection_path
-   >>> import bpy
-   >>> obj = bpy.context.object
-   >>> if obj:
-   ...     path = get_collection_path(obj)
-   ...     print(f"Collection path: {' > '.join(path)}")
-
-4. Test find_parent_collection:
-   >>> from blender_extension.utils.collections import find_parent_collection
-   >>> import bpy
-   >>> root = bpy.context.scene.collection
-   >>> child = list(root.children)[0] if root.children else None
-   >>> if child:
-   ...     parent = find_parent_collection(root, child)
-   ...     print(f"Parent of '{child.name}': {parent.name if parent else 'None'}")
 """
 
 from __future__ import annotations

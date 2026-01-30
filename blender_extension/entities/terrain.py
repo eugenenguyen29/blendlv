@@ -3,36 +3,6 @@
 This module provides the TerrainExtractor class for extracting data from
 terrain/ground meshes. Terrain objects are typically large, unique meshes
 that define the walkable ground surface.
-
-Manual Test Checklist (Blender Python Console):
------------------------------------------------
-1. Test terrain detection via property:
-   >>> from blender_extension.entities.terrain import TerrainExtractor
-   >>> import bpy
-   >>> ext = TerrainExtractor()
-   >>> bpy.ops.mesh.primitive_plane_add()
-   >>> obj = bpy.context.object
-   >>> obj.trivesta.is_terrain = True
-   >>> print(ext.matches(obj))  # Should print True
-
-2. Test terrain detection via legacy property:
-   >>> from blender_extension.entities.terrain import TerrainExtractor
-   >>> import bpy
-   >>> ext = TerrainExtractor()
-   >>> bpy.ops.mesh.primitive_plane_add()
-   >>> obj = bpy.context.object
-   >>> obj["trivesta_is_terrain"] = True
-   >>> print(ext.matches(obj))  # Should print True
-
-3. Test extraction (no asset_id):
-   >>> from blender_extension.entities.terrain import TerrainExtractor
-   >>> import bpy
-   >>> ext = TerrainExtractor()
-   >>> obj = bpy.context.object
-   >>> obj.trivesta.is_terrain = True
-   >>> instance = ext.extract(obj)
-   >>> print(f"Asset ID: {instance.asset_id}")  # Should print None
-   >>> print(f"Entity type: {instance.entity_type}")  # Should print terrain
 """
 
 from __future__ import annotations

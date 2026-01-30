@@ -3,26 +3,6 @@
 This module provides the StaticExtractor class for extracting data from
 regular static prop meshes. It serves as the default/fallback extractor
 for mesh objects not handled by other specialized extractors.
-
-Manual Test Checklist (Blender Python Console):
------------------------------------------------
-1. Test static mesh matching:
-   >>> from blender_extension.entities.static import StaticExtractor
-   >>> import bpy
-   >>> ext = StaticExtractor()
-   >>> bpy.ops.mesh.primitive_cube_add()
-   >>> obj = bpy.context.object
-   >>> print(ext.matches(obj))  # Should print True
-
-2. Test extraction:
-   >>> from blender_extension.entities.static import StaticExtractor
-   >>> import bpy
-   >>> ext = StaticExtractor()
-   >>> obj = bpy.context.object
-   >>> instance = ext.extract(obj)
-   >>> print(f"Name: {instance.name}")
-   >>> print(f"Entity type: {instance.entity_type}")
-   >>> print(f"Position: {instance.position}")
 """
 
 from __future__ import annotations

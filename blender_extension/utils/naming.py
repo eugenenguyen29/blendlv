@@ -2,29 +2,6 @@
 
 This module provides functions for generating consistent, safe names
 for assets and instances that can be used as file names and identifiers.
-
-Manual Test Checklist (Blender Python Console):
------------------------------------------------
-1. Test sanitize_name:
-   >>> from blender_extension.utils.naming import sanitize_name
-   >>> print(sanitize_name("My Object.001"))  # Should print: "my_object_001"
-   >>> print(sanitize_name("Tree (Oak)"))     # Should print: "tree_oak"
-   >>> print(sanitize_name("!!!"))            # Should print: "unnamed"
-   >>> print(sanitize_name(""))               # Should print: "unnamed"
-
-2. Test generate_asset_key with linked object:
-   >>> from blender_extension.utils.naming import generate_asset_key
-   >>> import bpy
-   >>> obj = bpy.context.object
-   >>> key = generate_asset_key(obj)
-   >>> print(f"Asset key: {key}")
-
-3. Test generate_instance_id:
-   >>> from blender_extension.utils.naming import generate_instance_id
-   >>> import bpy
-   >>> obj = bpy.context.object
-   >>> instance_id = generate_instance_id(obj)
-   >>> print(f"Instance ID: {instance_id}")
 """
 
 from __future__ import annotations

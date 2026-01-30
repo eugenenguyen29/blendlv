@@ -2,22 +2,6 @@
 
 This module handles exporting world-level elements that are not part of
 any specific island, such as water planes, skyboxes, or global decorations.
-
-Manual Test Checklist (Blender Python Console):
------------------------------------------------
-1. Test export_world_glb:
-   >>> from blender_extension.exporters.world import export_world_glb
-   >>> import bpy
-   >>> files = export_world_glb("/tmp/test_export/", bpy.context)
-   >>> print(f"Exported {len(files)} world files")
-
-2. Test get_world_objects:
-   >>> from blender_extension.exporters.world import get_world_objects
-   >>> import bpy
-   >>> objs = get_world_objects(bpy.context.scene)
-   >>> print(f"Found {len(objs)} world objects")
-   >>> for obj in objs:
-   ...     print(f"  {obj.name}")
 """
 
 from __future__ import annotations

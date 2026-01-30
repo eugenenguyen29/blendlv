@@ -2,20 +2,6 @@
 
 This module provides shared data structures and utility functions
 used across all exporter modules.
-
-Manual Test Checklist (Blender Python Console):
------------------------------------------------
-1. Test ExportResult creation:
-   >>> from blender_extension.exporters.base import ExportResult
-   >>> result = ExportResult(success=True, message="Test", files_created=["test.glb"])
-   >>> print(f"Success: {result.success}, Files: {result.files_created}")
-
-2. Test selection save/restore:
-   >>> from blender_extension.exporters.base import save_selection, restore_selection
-   >>> import bpy
-   >>> saved = save_selection(bpy.context)
-   >>> print(f"Saved {len(saved.selected)} objects")
-   >>> restore_selection(bpy.context, saved)
 """
 
 from __future__ import annotations

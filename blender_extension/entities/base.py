@@ -7,22 +7,6 @@ and extracting relevant data from matching objects.
 Design Pattern: Strategy
     Each extractor is a strategy for handling a specific entity type.
     Extractors are checked in order; first match wins.
-
-Manual Test Checklist (Blender Python Console):
------------------------------------------------
-1. Test abstract methods are enforced:
-   >>> from blender_extension.entities.base import EntityExtractor
-   >>> class BadExtractor(EntityExtractor):
-   ...     pass
-   >>> ext = BadExtractor()  # Should raise TypeError
-
-2. Test helper methods work:
-   >>> from blender_extension.entities.static import StaticExtractor
-   >>> import bpy
-   >>> ext = StaticExtractor()
-   >>> obj = bpy.context.object
-   >>> print(ext._generate_instance_id(obj))  # Should print ID
-   >>> print(ext._get_collection_path(obj))   # Should print path list
 """
 
 from __future__ import annotations

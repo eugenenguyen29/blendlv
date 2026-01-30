@@ -2,28 +2,6 @@
 
 This module provides functions for path resolution and directory management,
 with support for Blender's relative path notation (//).
-
-Manual Test Checklist (Blender Python Console):
------------------------------------------------
-1. Test resolve_path:
-   >>> from blender_extension.utils.files import resolve_path
-   >>> abs_path = resolve_path("//exports/")
-   >>> print(f"Absolute: {abs_path}")
-
-2. Test ensure_directory:
-   >>> from blender_extension.utils.files import ensure_directory
-   >>> path = ensure_directory("//exports/test/")
-   >>> print(f"Created: {path}")
-
-3. Test get_relative_path:
-   >>> from blender_extension.utils.files import get_relative_path
-   >>> rel = get_relative_path("/home/user/exports/assets/tree.glb", "/home/user/exports")
-   >>> print(f"Relative: {rel}")  # Should print: assets/tree.glb
-
-4. Test get_export_subdir:
-   >>> from blender_extension.utils.files import get_export_subdir
-   >>> subdir = get_export_subdir("//exports/", "assets")
-   >>> print(f"Subdir: {subdir}")
 """
 
 from __future__ import annotations
