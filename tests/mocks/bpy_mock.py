@@ -70,6 +70,28 @@ class MockAssetShelf:
     bl_space_type = ""
 
 
+class MockUIList:
+    """Mock base class for Blender UI lists."""
+
+    bl_idname = ""
+    layout_type = "DEFAULT"
+
+    def draw_item(
+        self,
+        context,
+        layout,
+        data,
+        item,
+        icon,
+        active_data,
+        active_property,
+        index=0,
+        flt_flag=0,
+    ):
+        """Override in subclass to draw list items."""
+        pass
+
+
 def create_bpy_mock() -> MagicMock:
     """Create a comprehensive bpy module mock.
 
@@ -98,6 +120,7 @@ def create_bpy_mock() -> MagicMock:
     bpy.types.Screen = MagicMock(name="Screen")
     bpy.types.SpaceView3D = MagicMock(name="SpaceView3D")
     bpy.types.AssetRepresentation = MagicMock(name="AssetRepresentation")
+    bpy.types.UIList = MockUIList  # Real class for inheritance
 
     # --- bpy.props ---
     bpy.props.IntProperty = _prop_factory("IntProperty")
@@ -196,14 +219,10 @@ def create_mathutils_mock() -> MagicMock:
             return sum(c**2 for c in self._coords) ** 0.5
 
         def __add__(self, other: MockVector) -> MockVector:
-            return MockVector(
-                tuple(a + b for a, b in zip(self._coords, other._coords))
-            )
+            return MockVector(tuple(a + b for a, b in zip(self._coords, other._coords)))
 
         def __sub__(self, other: MockVector) -> MockVector:
-            return MockVector(
-                tuple(a - b for a, b in zip(self._coords, other._coords))
-            )
+            return MockVector(tuple(a - b for a, b in zip(self._coords, other._coords)))
 
         def __mul__(self, scalar: float) -> MockVector:
             return MockVector(tuple(c * scalar for c in self._coords))

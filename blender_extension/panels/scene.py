@@ -19,8 +19,8 @@ class TRIVESTA_PT_scene_panel(Panel):
 
     bl_label = "Trivesta Level"
     bl_idname = "TRIVESTA_PT_scene_panel"
-    bl_space_type = 'PROPERTIES'
-    bl_region_type = 'WINDOW'
+    bl_space_type = "PROPERTIES"
+    bl_region_type = "WINDOW"
     bl_context = "scene"
 
     def draw(self, context):
@@ -42,7 +42,7 @@ class TRIVESTA_PT_scene_panel(Panel):
         # World settings section
         layout.separator()
         box = layout.box()
-        box.label(text="World Settings", icon='WORLD')
+        box.label(text="World Settings", icon="WORLD")
 
         row = box.row()
         row.prop(settings, "world_size_x")

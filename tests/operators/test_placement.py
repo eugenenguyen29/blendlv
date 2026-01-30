@@ -4,8 +4,6 @@ from __future__ import annotations
 
 from unittest.mock import MagicMock, patch
 
-import pytest
-
 
 class TestGetLibraryPath:
     """Tests for get_library_path function."""
@@ -87,9 +85,7 @@ class TestDragAssetOperator:
         result = op.invoke(mock_context, mock_event)
         assert result == {"CANCELLED"}
 
-    def test_invoke_starts_modal_with_valid_asset(
-        self, mock_bpy_module, mock_context, mock_event
-    ):
+    def test_invoke_starts_modal_with_valid_asset(self, mock_bpy_module, mock_context, mock_event):
         """Should start modal operation with valid asset."""
         from blender_extension.operators.placement import TRIVESTA_OT_drag_asset
 
@@ -105,7 +101,7 @@ class TestDragAssetOperator:
 
     def test_modal_cancel_on_escape(self, mock_bpy_module, mock_context, mock_event):
         """Should cancel and cleanup on ESC key."""
-        from blender_extension.operators.placement import TRIVESTA_OT_drag_asset, DragState
+        from blender_extension.operators.placement import DragState, TRIVESTA_OT_drag_asset
 
         op = TRIVESTA_OT_drag_asset()
         op._obj = MagicMock()
@@ -113,9 +109,7 @@ class TestDragAssetOperator:
         mock_context.mode = "OBJECT"
         mock_event.type = "ESC"
 
-        with patch(
-            "blender_extension.operators.placement.get_mouse_location", return_value=None
-        ):
+        with patch("blender_extension.operators.placement.get_mouse_location", return_value=None):
             result = op.modal(mock_context, mock_event)
 
         assert result == {"CANCELLED"}
@@ -123,7 +117,7 @@ class TestDragAssetOperator:
 
     def test_modal_cancel_on_rightmouse(self, mock_bpy_module, mock_context, mock_event):
         """Should cancel on right mouse button."""
-        from blender_extension.operators.placement import TRIVESTA_OT_drag_asset, DragState
+        from blender_extension.operators.placement import DragState, TRIVESTA_OT_drag_asset
 
         op = TRIVESTA_OT_drag_asset()
         op._obj = None
@@ -131,9 +125,7 @@ class TestDragAssetOperator:
         mock_context.mode = "OBJECT"
         mock_event.type = "RIGHTMOUSE"
 
-        with patch(
-            "blender_extension.operators.placement.get_mouse_location", return_value=None
-        ):
+        with patch("blender_extension.operators.placement.get_mouse_location", return_value=None):
             result = op.modal(mock_context, mock_event)
 
         assert result == {"CANCELLED"}
@@ -142,7 +134,7 @@ class TestDragAssetOperator:
         self, mock_bpy_module, mock_context, mock_event, mock_object
     ):
         """Should finish when left mouse released with object placed."""
-        from blender_extension.operators.placement import TRIVESTA_OT_drag_asset, DragState
+        from blender_extension.operators.placement import DragState, TRIVESTA_OT_drag_asset
 
         op = TRIVESTA_OT_drag_asset()
         op._obj = mock_object
@@ -163,7 +155,7 @@ class TestDragAssetOperator:
         self, mock_bpy_module, mock_context, mock_event
     ):
         """Should cancel when left mouse released outside 3D view."""
-        from blender_extension.operators.placement import TRIVESTA_OT_drag_asset, DragState
+        from blender_extension.operators.placement import DragState, TRIVESTA_OT_drag_asset
 
         op = TRIVESTA_OT_drag_asset()
         op._obj = None
@@ -172,9 +164,7 @@ class TestDragAssetOperator:
         mock_event.type = "LEFTMOUSE"
         mock_event.value = "RELEASE"
 
-        with patch(
-            "blender_extension.operators.placement.get_mouse_location", return_value=None
-        ):
+        with patch("blender_extension.operators.placement.get_mouse_location", return_value=None):
             result = op.modal(mock_context, mock_event)
 
         assert result == {"CANCELLED"}
@@ -184,9 +174,9 @@ class TestDragAssetOperator:
     ):
         """Should create object on first MOUSEMOVE into 3D view."""
         from blender_extension.operators.placement import (
-            TRIVESTA_OT_drag_asset,
-            PlacementResult,
             DragState,
+            PlacementResult,
+            TRIVESTA_OT_drag_asset,
         )
 
         op = TRIVESTA_OT_drag_asset()
@@ -217,7 +207,7 @@ class TestDragAssetOperator:
         self, mock_bpy_module, mock_context, mock_event, mock_object
     ):
         """Should update object position on subsequent MOUSEMOVE."""
-        from blender_extension.operators.placement import TRIVESTA_OT_drag_asset, DragState
+        from blender_extension.operators.placement import DragState, TRIVESTA_OT_drag_asset
 
         op = TRIVESTA_OT_drag_asset()
         op._obj = mock_object

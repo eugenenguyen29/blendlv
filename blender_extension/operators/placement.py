@@ -165,7 +165,7 @@ def place_asset(
     new_obj.location = location
 
     # Select the new object
-    bpy.ops.object.select_all(action='DESELECT')
+    bpy.ops.object.select_all(action="DESELECT")
     new_obj.select_set(True)
     context.view_layer.objects.active = new_obj
 
@@ -193,20 +193,23 @@ def get_mouse_location(
     mouse_x, mouse_y = event.mouse_x, event.mouse_y
 
     for area in context.screen.areas:
-        if area.type != 'VIEW_3D':
+        if area.type != "VIEW_3D":
             continue
         # Check if mouse is within this area
-        if not (area.x <= mouse_x < area.x + area.width and
-                area.y <= mouse_y < area.y + area.height):
+        if not (
+            area.x <= mouse_x < area.x + area.width and area.y <= mouse_y < area.y + area.height
+        ):
             continue
 
         # Find the WINDOW region within this area
         for region in area.regions:
-            if region.type != 'WINDOW':
+            if region.type != "WINDOW":
                 continue
             # Check if mouse is within this region
-            if not (region.x <= mouse_x < region.x + region.width and
-                    region.y <= mouse_y < region.y + region.height):
+            if not (
+                region.x <= mouse_x < region.x + region.width
+                and region.y <= mouse_y < region.y + region.height
+            ):
                 continue
 
             rv3d = area.spaces.active.region_3d
@@ -260,19 +263,21 @@ class TRIVESTA_OT_place_asset(Operator):
 
     bl_idname = "trivesta.place_asset"
     bl_label = "Place Asset"
-    bl_options = {'REGISTER', 'UNDO'}
+    bl_options = {"REGISTER", "UNDO"}
 
     # Properties passed by Asset Shelf
-    asset_library_type: IntProperty(options={'HIDDEN', 'SKIP_SAVE'})  # type: ignore
-    asset_library_identifier: StringProperty(options={'HIDDEN', 'SKIP_SAVE'})  # type: ignore
-    relative_asset_identifier: StringProperty(options={'HIDDEN', 'SKIP_SAVE'})  # type: ignore
+    asset_library_type: IntProperty(options={"HIDDEN", "SKIP_SAVE"})  # type: ignore
+    asset_library_identifier: StringProperty(options={"HIDDEN", "SKIP_SAVE"})  # type: ignore
+    relative_asset_identifier: StringProperty(options={"HIDDEN", "SKIP_SAVE"})  # type: ignore
 
     def invoke(self, context: Context, event: Event) -> set[str]:
-        debug(f"place_asset.invoke: lib={self.asset_library_identifier}, path={self.relative_asset_identifier}")
+        debug(
+            f"place_asset.invoke: lib={self.asset_library_identifier}, path={self.relative_asset_identifier}"
+        )
 
         if not self.relative_asset_identifier:
-            self.report({'WARNING'}, "No asset selected")
-            return {'CANCELLED'}
+            self.report({"WARNING"}, "No asset selected")
+            return {"CANCELLED"}
 
         # Click is from Asset Shelf, so use 3D cursor for placement
         location = context.scene.cursor.location.copy()
@@ -284,11 +289,11 @@ class TRIVESTA_OT_place_asset(Operator):
         )
 
         if result.success:
-            self.report({'INFO'}, f"Placed: {result.object.name}")
-            return {'FINISHED'}
+            self.report({"INFO"}, f"Placed: {result.object.name}")
+            return {"FINISHED"}
 
-        self.report({'ERROR'}, result.message or "Failed to place asset")
-        return {'CANCELLED'}
+        self.report({"ERROR"}, result.message or "Failed to place asset")
+        return {"CANCELLED"}
 
 
 class TRIVESTA_OT_drag_asset(Operator):
@@ -296,12 +301,12 @@ class TRIVESTA_OT_drag_asset(Operator):
 
     bl_idname = "trivesta.drag_asset"
     bl_label = "Drag Asset"
-    bl_options = {'REGISTER', 'UNDO'}
+    bl_options = {"REGISTER", "UNDO"}
 
     # Properties passed by Asset Shelf
-    asset_library_type: IntProperty(options={'HIDDEN', 'SKIP_SAVE'})  # type: ignore
-    asset_library_identifier: StringProperty(options={'HIDDEN', 'SKIP_SAVE'})  # type: ignore
-    relative_asset_identifier: StringProperty(options={'HIDDEN', 'SKIP_SAVE'})  # type: ignore
+    asset_library_type: IntProperty(options={"HIDDEN", "SKIP_SAVE"})  # type: ignore
+    asset_library_identifier: StringProperty(options={"HIDDEN", "SKIP_SAVE"})  # type: ignore
+    relative_asset_identifier: StringProperty(options={"HIDDEN", "SKIP_SAVE"})  # type: ignore
 
     # State management
     _state: DragState = DragState.IDLE
@@ -334,10 +339,12 @@ class TRIVESTA_OT_drag_asset(Operator):
             return True
 
     def invoke(self, context: Context, event: Event) -> set[str]:
-        debug(f"drag_asset.invoke: lib={self.asset_library_identifier}, path={self.relative_asset_identifier}")
+        debug(
+            f"drag_asset.invoke: lib={self.asset_library_identifier}, path={self.relative_asset_identifier}"
+        )
 
         if not self.relative_asset_identifier:
-            return {'CANCELLED'}
+            return {"CANCELLED"}
 
         # Initialize state
         self._state = DragState.DRAGGING
@@ -348,19 +355,19 @@ class TRIVESTA_OT_drag_asset(Operator):
         self._last_location = None
 
         context.window_manager.modal_handler_add(self)
-        context.window.cursor_set('CROSSHAIR')
-        return {'RUNNING_MODAL'}
+        context.window.cursor_set("CROSSHAIR")
+        return {"RUNNING_MODAL"}
 
     def modal(self, context: Context, event: Event) -> set[str]:
         """Handle modal events with state machine."""
         try:
             # Edge case: Mode changed during drag
-            if context.mode != 'OBJECT':
+            if context.mode != "OBJECT":
                 debug(f"Mode changed to {context.mode}, cancelling drag")
                 return self._cancel(context)
 
             # Edge case: Window focus lost
-            if event.type == 'WINDOW_DEACTIVATE':
+            if event.type == "WINDOW_DEACTIVATE":
                 debug("Window deactivated during drag")
                 return self._cancel(context)
 
@@ -370,42 +377,42 @@ class TRIVESTA_OT_drag_asset(Operator):
             elif self._state == DragState.OBJECT_CREATED:
                 return self._handle_object_created(context, event)
 
-            return {'RUNNING_MODAL'}
+            return {"RUNNING_MODAL"}
 
         except Exception as e:
             debug(f"Modal error: {e}")
             self._cleanup(context)
-            return {'CANCELLED'}
+            return {"CANCELLED"}
 
     def _handle_dragging(self, context: Context, event: Event) -> set[str]:
         """Handle events when no object exists yet."""
         loc = get_mouse_location(context, event, exclude=None)
 
-        if event.type == 'MOUSEMOVE' and loc:
+        if event.type == "MOUSEMOVE" and loc:
             # Create object on first valid location
             result = place_asset(context, self._library, self._path, loc)
             if result.success:
                 self._obj = result.object
                 self._state = DragState.OBJECT_CREATED
-                context.window.cursor_set('NONE')
+                context.window.cursor_set("NONE")
                 debug("Object created, transitioning to OBJECT_CREATED state")
             else:
                 debug(f"Placement failed: {result.message}")
-            return {'RUNNING_MODAL'}
+            return {"RUNNING_MODAL"}
 
         # Cancel events
-        if event.type in {'RIGHTMOUSE', 'ESC'}:
+        if event.type in {"RIGHTMOUSE", "ESC"}:
             return self._cancel(context)
 
         # Left release before object created = cancel
-        if event.type == 'LEFTMOUSE' and event.value == 'RELEASE':
+        if event.type == "LEFTMOUSE" and event.value == "RELEASE":
             return self._cancel(context)
 
-        return {'RUNNING_MODAL'}
+        return {"RUNNING_MODAL"}
 
     def _handle_object_created(self, context: Context, event: Event) -> set[str]:
         """Handle events when object exists and follows mouse."""
-        if event.type == 'MOUSEMOVE':
+        if event.type == "MOUSEMOVE":
             # Throttle raycasts for performance
             if self._should_raycast():
                 loc = get_mouse_location(context, event, exclude=self._obj)
@@ -417,33 +424,33 @@ class TRIVESTA_OT_drag_asset(Operator):
                         # Only redraw when position actually changes
                         if context.area:
                             context.area.tag_redraw()
-            return {'RUNNING_MODAL'}
+            return {"RUNNING_MODAL"}
 
-        if event.type == 'LEFTMOUSE' and event.value == 'RELEASE':
+        if event.type == "LEFTMOUSE" and event.value == "RELEASE":
             return self._finish(context)
 
-        if event.type in {'RIGHTMOUSE', 'ESC'}:
+        if event.type in {"RIGHTMOUSE", "ESC"}:
             return self._cancel(context)
 
-        return {'RUNNING_MODAL'}
+        return {"RUNNING_MODAL"}
 
     def _finish(self, context: Context) -> set[str]:
         """Complete placement successfully."""
-        context.window.cursor_set('DEFAULT')
+        context.window.cursor_set("DEFAULT")
         if self._obj:
             debug(f"Placed at {self._obj.location}")
         self._reset_state()
-        return {'FINISHED'}
+        return {"FINISHED"}
 
     def _cancel(self, context: Context) -> set[str]:
         """Cancel placement and cleanup."""
         self._cleanup(context)
-        return {'CANCELLED'}
+        return {"CANCELLED"}
 
     def _cleanup(self, context: Context) -> None:
         """Clean up operator state and remove preview object."""
         try:
-            context.window.cursor_set('DEFAULT')
+            context.window.cursor_set("DEFAULT")
         except Exception:
             pass  # Window may be invalid
 

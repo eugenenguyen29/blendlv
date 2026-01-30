@@ -9,12 +9,12 @@ from __future__ import annotations
 # Entity type enum items for Blender EnumProperty
 # Format: (identifier, name, description)
 ENTITY_TYPES: list[tuple[str, str, str]] = [
-    ('static', "Static", "Merged for rendering"),
-    ('npc', "NPC", "Character with AI"),
-    ('interactive', "Interactive", "Player interaction"),
-    ('trigger', "Trigger", "Invisible trigger zone"),
-    ('audio', "Audio", "Audio source"),
-    ('terrain', "Terrain", "Ground/terrain mesh"),
+    ("static", "Static", "Merged for rendering"),
+    ("npc", "NPC", "Character with AI"),
+    ("interactive", "Interactive", "Player interaction"),
+    ("trigger", "Trigger", "Invisible trigger zone"),
+    ("audio", "Audio", "Audio source"),
+    ("terrain", "Terrain", "Ground/terrain mesh"),
 ]
 
 # Manifest format versions

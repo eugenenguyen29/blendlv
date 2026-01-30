@@ -129,8 +129,7 @@ def export_collision(
             collision_paths[island_id] = relative_path
         else:
             print(
-                f"[Collision Export Error] Failed to export collision mesh "
-                f"for island '{island_id}'"
+                f"[Collision Export Error] Failed to export collision mesh for island '{island_id}'"
             )
 
     return collision_paths

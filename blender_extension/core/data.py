@@ -55,6 +55,7 @@ class Instance:
         collection_path: Hierarchy path from root collection.
         custom_properties: Additional user-defined properties.
     """
+
     id: str
     name: str
     asset_id: str | None
@@ -76,6 +77,7 @@ class AssetDefinition:
         file: Relative path to GLB file.
         source: Optional linked library path.
     """
+
     id: str
     file: str
     source: str | None
@@ -90,6 +92,7 @@ class CollectionNode:
         children: Child collection nodes keyed by name.
         instance_ids: IDs of instances directly in this collection.
     """
+
     name: str
     children: dict[str, CollectionNode] = field(default_factory=dict)
     instance_ids: list[str] = field(default_factory=list)
@@ -121,6 +124,7 @@ class Island:
         terrain_objects: List of terrain instance IDs.
         collision_mesh: Optional path to collision mesh file.
     """
+
     id: str
     name: str
     world_position: tuple[float, float, float]
@@ -140,6 +144,7 @@ class WorldMap:
         islands: Island definitions keyed by ID.
         water_level: Y coordinate of water surface.
     """
+
     size: tuple[float, float]
     islands: dict[str, Island] = field(default_factory=dict)
     water_level: float = 0.0
@@ -162,6 +167,7 @@ class ExportData:
         by_asset_id: Instances grouped by asset ID (computed index).
         by_entity_type: Instances grouped by entity type (computed index).
     """
+
     asset_definitions: dict[str, AssetDefinition] = field(default_factory=dict)
     instances: list[Instance] = field(default_factory=list)
     terrain_objects: list[Instance] = field(default_factory=list)

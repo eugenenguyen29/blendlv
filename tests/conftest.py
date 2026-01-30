@@ -59,9 +59,17 @@ def pytest_configure(config):
 def pytest_unconfigure(config):
     """Clean up mocked modules after tests."""
     module_names = [
-        "bpy", "bpy.types", "bpy.props", "bpy.data", "bpy.ops",
-        "bpy.context", "bpy.utils", "bpy.app",
-        "mathutils", "bpy_extras", "bpy_extras.view3d_utils",
+        "bpy",
+        "bpy.types",
+        "bpy.props",
+        "bpy.data",
+        "bpy.ops",
+        "bpy.context",
+        "bpy.utils",
+        "bpy.app",
+        "mathutils",
+        "bpy_extras",
+        "bpy_extras.view3d_utils",
     ]
     for mod_name in module_names:
         if mod_name in sys.modules:

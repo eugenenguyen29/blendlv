@@ -74,20 +74,23 @@ tests/
   test_collections.py     # tests for utils/collections.py
 ```
 
-## Linting
+## Linting & Type Checking
+
+**Note**: `ruff` and `ty` are provided by the nix flake. Use them directly (not via `uv run`).
 
 ```bash
-uv run ruff check .        # check all files
-uv run ruff check --fix .  # auto-fix issues
+ruff check .        # check all files
+ruff check --fix .  # auto-fix issues
+ty check            # type checking
 ```
 
 ## Code Verification Rules
 
 - **DO NOT** use `python3 -m py_compile` for syntax/type checking
-- **ALWAYS** use `uv run ruff check` for linting and code verification
-- **Use `uv run ty check`** for type checking (Astral's fast type checker)
+- **ALWAYS** use `ruff check` for linting and code verification (provided by nix flake)
+- **Use `ty check`** for type checking (Astral's fast type checker, provided by nix flake)
 
 ```bash
-uv run ruff check .   # linting
-uv run ty check          # type checking
+ruff check .   # linting
+ty check       # type checking
 ```

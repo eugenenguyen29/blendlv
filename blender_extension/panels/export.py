@@ -18,8 +18,8 @@ class TRIVESTA_PT_export_panel(Panel):
 
     bl_label = "Export"
     bl_idname = "TRIVESTA_PT_export_panel"
-    bl_space_type = 'PROPERTIES'
-    bl_region_type = 'WINDOW'
+    bl_space_type = "PROPERTIES"
+    bl_region_type = "WINDOW"
     bl_context = "scene"
     bl_parent_id = "TRIVESTA_PT_scene_panel"
 
@@ -30,12 +30,12 @@ class TRIVESTA_PT_export_panel(Panel):
 
         # Export mode indicator
         if settings.separate_assets:
-            layout.label(text="Mode: Separated Assets", icon='OUTLINER_OB_GROUP_INSTANCE')
+            layout.label(text="Mode: Separated Assets", icon="OUTLINER_OB_GROUP_INSTANCE")
         else:
-            layout.label(text="Mode: Combined GLB", icon='MESH_DATA')
+            layout.label(text="Mode: Combined GLB", icon="MESH_DATA")
 
         layout.separator()
 
         # Export button
         col = layout.column(align=True)
-        col.operator("trivesta.export", text="Export All", icon='EXPORT')
+        col.operator("trivesta.export", text="Export All", icon="EXPORT")

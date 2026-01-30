@@ -20,7 +20,7 @@ class TRIVESTA_AST_level_assets(bpy.types.AssetShelf):
     bl_space_type = "VIEW_3D"
     bl_idname = "VIEW3D_AST_trivesta_assets"
     bl_label = "Trivesta Assets"
-    bl_options = {'DEFAULT_VISIBLE'}
+    bl_options = {"DEFAULT_VISIBLE"}
 
     # Display settings - readable thumbnail size
     bl_default_preview_size = 96
@@ -33,12 +33,12 @@ class TRIVESTA_AST_level_assets(bpy.types.AssetShelf):
     def poll(cls, context: bpy.types.Context) -> bool:
         """Show shelf only in Object mode."""
         return (
-            context.mode == 'OBJECT'
+            context.mode == "OBJECT"
             and context.space_data is not None
-            and context.space_data.type == 'VIEW_3D'
+            and context.space_data.type == "VIEW_3D"
         )
 
     @classmethod
     def asset_poll(cls, asset: bpy.types.AssetRepresentation) -> bool:
         """Filter to Object and Collection assets only."""
-        return asset.id_type in {'OBJECT', 'COLLECTION'}
+        return asset.id_type in {"OBJECT", "COLLECTION"}

@@ -11,13 +11,11 @@ from blender_extension.core.data import (
     AssetDefinition,
     BoundingBox,
     CollectionNode,
-    CollectionNodeDict,
     ExportData,
     Instance,
     Island,
     WorldMap,
 )
-
 
 # --- Fixtures ---
 
@@ -107,9 +105,7 @@ class TestInstance:
         assert sample_instance.collection_path == ["Scene", "Props", "Rocks"]
         assert sample_instance.custom_properties == {"lod_level": 0, "visible": True}
 
-    def test_creation_with_none_asset_id(
-        self, sample_instance_no_asset: Instance
-    ) -> None:
+    def test_creation_with_none_asset_id(self, sample_instance_no_asset: Instance) -> None:
         assert sample_instance_no_asset.asset_id is None
         assert sample_instance_no_asset.entity_type == "terrain"
 
@@ -358,9 +354,7 @@ class TestExportData:
         assert data.by_asset_id == {}
         assert data.by_entity_type == {}
 
-    def test_build_indices_single_instance(
-        self, sample_instance: Instance
-    ) -> None:
+    def test_build_indices_single_instance(self, sample_instance: Instance) -> None:
         data = ExportData()
         data.instances.append(sample_instance)
         data.build_indices()
@@ -389,9 +383,7 @@ class TestExportData:
         assert "terrain" in data.by_entity_type
         assert len(data.by_entity_type["terrain"]) == 1
 
-    def test_build_indices_multiple_instances(
-        self, sample_bounding_box: BoundingBox
-    ) -> None:
+    def test_build_indices_multiple_instances(self, sample_bounding_box: BoundingBox) -> None:
         data = ExportData()
 
         # Add multiple instances with same asset_id
@@ -483,19 +475,13 @@ class TestExportData:
         assert data.collection_tree.name == "Scene"
         assert "Props" in data.collection_tree.children
 
-    def test_full_export_data_workflow(
-        self, sample_bounding_box: BoundingBox
-    ) -> None:
+    def test_full_export_data_workflow(self, sample_bounding_box: BoundingBox) -> None:
         """Integration test for typical export data workflow."""
         data = ExportData()
 
         # Add asset definitions
-        data.asset_definitions["rock"] = AssetDefinition(
-            id="rock", file="rock.glb", source=None
-        )
-        data.asset_definitions["tree"] = AssetDefinition(
-            id="tree", file="tree.glb", source=None
-        )
+        data.asset_definitions["rock"] = AssetDefinition(id="rock", file="rock.glb", source=None)
+        data.asset_definitions["tree"] = AssetDefinition(id="tree", file="tree.glb", source=None)
 
         # Add instances
         rock_inst = Instance(

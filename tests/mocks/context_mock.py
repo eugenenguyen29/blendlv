@@ -152,14 +152,10 @@ def create_scene_mock(name: str = "Scene") -> MagicMock:
     scene.cursor.location.x = 0.0
     scene.cursor.location.y = 0.0
     scene.cursor.location.z = 0.0
-    scene.cursor.location.copy = MagicMock(
-        return_value=MagicMock(x=0.0, y=0.0, z=0.0)
-    )
+    scene.cursor.location.copy = MagicMock(return_value=MagicMock(x=0.0, y=0.0, z=0.0))
 
     # Ray casting returns (hit, location, normal, face_index, object, matrix)
-    scene.ray_cast = MagicMock(
-        return_value=(False, None, None, -1, None, None)
-    )
+    scene.ray_cast = MagicMock(return_value=(False, None, None, -1, None, None))
 
     return scene
 

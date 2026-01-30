@@ -38,13 +38,13 @@ class TRIVESTA_UL_asset_list(UIList):
         flt_flag: int = 0,
     ) -> None:
         """Draw a single asset item in the list."""
-        if self.layout_type in {'DEFAULT', 'COMPACT'}:
+        if self.layout_type in {"DEFAULT", "COMPACT"}:
             row = layout.row(align=True)
-            row.label(text=item.name, icon='OBJECT_DATA')
+            row.label(text=item.name, icon="OBJECT_DATA")
             row.label(text=f"({item.count})")
-        elif self.layout_type == 'GRID':
-            layout.alignment = 'CENTER'
-            layout.label(text="", icon='OBJECT_DATA')
+        elif self.layout_type == "GRID":
+            layout.alignment = "CENTER"
+            layout.label(text="", icon="OBJECT_DATA")
 
 
 class AssetItem(bpy.types.PropertyGroup):
@@ -72,7 +72,7 @@ class TRIVESTA_OT_refresh_assets(Operator):
         asset_map: dict[str, dict] = {}
 
         for obj in scene.objects:
-            if obj.type != 'MESH':
+            if obj.type != "MESH":
                 continue
 
             source = get_library_source(obj)
@@ -82,23 +82,23 @@ class TRIVESTA_OT_refresh_assets(Operator):
             asset_key = generate_asset_key(obj)
             if asset_key not in asset_map:
                 asset_map[asset_key] = {
-                    'name': obj.name.rsplit('.', 1)[0],  # Remove .001 suffix
-                    'key': asset_key,
-                    'source_obj': obj.name,
-                    'count': 0,
+                    "name": obj.name.rsplit(".", 1)[0],  # Remove .001 suffix
+                    "key": asset_key,
+                    "source_obj": obj.name,
+                    "count": 0,
                 }
-            asset_map[asset_key]['count'] += 1
+            asset_map[asset_key]["count"] += 1
 
         # Populate the list
-        for asset_data in sorted(asset_map.values(), key=lambda x: x['name']):
+        for asset_data in sorted(asset_map.values(), key=lambda x: x["name"]):
             item = scene.trivesta_assets.add()
-            item.name = asset_data['name']
-            item.asset_key = asset_data['key']
-            item.source_object = asset_data['source_obj']
-            item.count = asset_data['count']
+            item.name = asset_data["name"]
+            item.asset_key = asset_data["key"]
+            item.source_object = asset_data["source_obj"]
+            item.count = asset_data["count"]
 
-        self.report({'INFO'}, f"Found {len(asset_map)} unique assets")
-        return {'FINISHED'}
+        self.report({"INFO"}, f"Found {len(asset_map)} unique assets")
+        return {"FINISHED"}
 
 
 class TRIVESTA_OT_place_scene_asset(Operator):
@@ -107,14 +107,13 @@ class TRIVESTA_OT_place_scene_asset(Operator):
     bl_idname = "trivesta.place_scene_asset"
     bl_label = "Place Asset"
     bl_description = "Duplicate selected asset at 3D cursor or click location"
-    bl_options = {'REGISTER', 'UNDO'}
+    bl_options = {"REGISTER", "UNDO"}
 
     @classmethod
     def poll(cls, context: Context) -> bool:
         """Check if an asset is selected."""
-        return (
+        return context.scene.trivesta_assets and 0 <= context.scene.trivesta_asset_index < len(
             context.scene.trivesta_assets
-            and 0 <= context.scene.trivesta_asset_index < len(context.scene.trivesta_assets)
         )
 
     def execute(self, context: Context) -> set[str]:
@@ -125,8 +124,8 @@ class TRIVESTA_OT_place_scene_asset(Operator):
         # Find source object
         source_obj = bpy.data.objects.get(asset_item.source_object)
         if source_obj is None:
-            self.report({'ERROR'}, f"Source object not found: {asset_item.source_object}")
-            return {'CANCELLED'}
+            self.report({"ERROR"}, f"Source object not found: {asset_item.source_object}")
+            return {"CANCELLED"}
 
         # Create linked duplicate
         new_obj = source_obj.copy()
@@ -136,12 +135,12 @@ class TRIVESTA_OT_place_scene_asset(Operator):
         new_obj.location = scene.cursor.location.copy()
 
         # Select new object
-        bpy.ops.object.select_all(action='DESELECT')
+        bpy.ops.object.select_all(action="DESELECT")
         new_obj.select_set(True)
         context.view_layer.objects.active = new_obj
 
-        self.report({'INFO'}, f"Placed: {asset_item.name}")
-        return {'FINISHED'}
+        self.report({"INFO"}, f"Placed: {asset_item.name}")
+        return {"FINISHED"}
 
     def invoke(self, context: Context, event: Event) -> set[str]:
         """Place at mouse position if possible."""
@@ -158,8 +157,8 @@ class TRIVESTA_OT_place_scene_asset(Operator):
 class TRIVESTA_PT_asset_browser(Panel):
     """Panel for browsing and placing scene assets."""
 
-    bl_space_type = 'VIEW_3D'
-    bl_region_type = 'UI'
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
     bl_category = "Trivesta"
     bl_idname = "TRIVESTA_PT_asset_browser"
     bl_label = "Asset Browser"
@@ -171,7 +170,7 @@ class TRIVESTA_PT_asset_browser(Panel):
 
         # Refresh button
         row = layout.row()
-        row.operator("trivesta.refresh_assets", icon='FILE_REFRESH')
+        row.operator("trivesta.refresh_assets", icon="FILE_REFRESH")
 
         # Asset list
         row = layout.row()
@@ -188,7 +187,7 @@ class TRIVESTA_PT_asset_browser(Panel):
         # Place button
         row = layout.row()
         row.scale_y = 1.5
-        row.operator("trivesta.place_scene_asset", icon='ADD', text="Place Selected")
+        row.operator("trivesta.place_scene_asset", icon="ADD", text="Place Selected")
 
         # Info about selected asset
         if scene.trivesta_assets and 0 <= scene.trivesta_asset_index < len(scene.trivesta_assets):

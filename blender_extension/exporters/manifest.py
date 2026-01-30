@@ -51,15 +51,12 @@ class ManifestSerializer:
         """
         return {
             "_generated": (
-                "AUTO-GENERATED FILE - DO NOT EDIT MANUALLY. "
-                "Re-export from Blender instead."
+                "AUTO-GENERATED FILE - DO NOT EDIT MANUALLY. Re-export from Blender instead."
             ),
             "version": MANIFEST_VERSION,
             "exported_at": datetime.now(UTC).isoformat(),
             "blender_file": bpy.data.filepath or "unsaved",
-            "asset_definitions": self._serialize_asset_definitions(
-                data.asset_definitions
-            ),
+            "asset_definitions": self._serialize_asset_definitions(data.asset_definitions),
             "instances": self._serialize_instances(data.instances),
             "terrain_objects": self._serialize_instances(data.terrain_objects),
             "collections": self._serialize_collection_tree(data.collection_tree),

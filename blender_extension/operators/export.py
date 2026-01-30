@@ -22,7 +22,7 @@ class TRIVESTA_OT_export(Operator):
     bl_idname = "trivesta.export"
     bl_label = "Export Trivesta Level"
     bl_description = "Export world geometry and manifest JSON"
-    bl_options = {'REGISTER', 'UNDO'}
+    bl_options = {"REGISTER", "UNDO"}
 
     def execute(self, context: bpy.types.Context) -> set[str]:
         """Execute the export operation.
@@ -38,20 +38,20 @@ class TRIVESTA_OT_export(Operator):
 
         # Validate export path
         if not export_path:
-            self.report({'ERROR'}, "Export path not set")
-            return {'CANCELLED'}
+            self.report({"ERROR"}, "Export path not set")
+            return {"CANCELLED"}
 
         # Execute export with exception handling
         try:
             result = export_world(context, export_path)
         except Exception as e:
-            self.report({'ERROR'}, f"Export failed with exception: {e}")
-            return {'CANCELLED'}
+            self.report({"ERROR"}, f"Export failed with exception: {e}")
+            return {"CANCELLED"}
 
         # Report results
         self._report_result(result)
 
-        return {'FINISHED'} if result.success else {'CANCELLED'}
+        return {"FINISHED"} if result.success else {"CANCELLED"}
 
     def _report_result(self, result: ExportResult) -> None:
         """Report export results to the user.
@@ -60,21 +60,21 @@ class TRIVESTA_OT_export(Operator):
             result: Export result with success status and file list.
         """
         if result.success:
-            self.report({'INFO'}, f"Export complete: {result.message}")
+            self.report({"INFO"}, f"Export complete: {result.message}")
 
             # Log created files (limit to avoid spam)
             file_count = len(result.files_created)
             if file_count <= 5:
                 for file_path in result.files_created:
-                    self.report({'INFO'}, f"  Created: {file_path}")
+                    self.report({"INFO"}, f"  Created: {file_path}")
             else:
                 for file_path in result.files_created[:3]:
-                    self.report({'INFO'}, f"  Created: {file_path}")
-                self.report({'INFO'}, f"  ... and {file_count - 3} more files")
+                    self.report({"INFO"}, f"  Created: {file_path}")
+                self.report({"INFO"}, f"  ... and {file_count - 3} more files")
         else:
-            self.report({'ERROR'}, f"Export failed: {result.message}")
+            self.report({"ERROR"}, f"Export failed: {result.message}")
             for error in result.errors:
-                self.report({'ERROR'}, f"  {error}")
+                self.report({"ERROR"}, f"  {error}")
 
     def invoke(self, context: bpy.types.Context, event: bpy.types.Event) -> set[str]:
         """Invoke the operator, showing confirmation for large scenes.
@@ -91,8 +91,7 @@ class TRIVESTA_OT_export(Operator):
         """
         # Count visible mesh objects
         mesh_count = sum(
-            1 for obj in context.scene.objects
-            if obj.type == 'MESH' and obj.visible_get()
+            1 for obj in context.scene.objects if obj.type == "MESH" and obj.visible_get()
         )
 
         # Show confirmation for large scenes

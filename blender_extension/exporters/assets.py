@@ -39,9 +39,7 @@ def group_by_asset_id(instances: list[Instance]) -> dict[str, list[Instance]]:
     return groups
 
 
-def find_object_by_name(
-    scene: bpy.types.Scene, name: str
-) -> bpy.types.Object | None:
+def find_object_by_name(scene: bpy.types.Scene, name: str) -> bpy.types.Object | None:
     """Find an object in the scene by name.
 
     Args:

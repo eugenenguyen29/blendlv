@@ -35,3 +35,6 @@ warn_unused_configs = true
 # Ignore unresolved imports for these modules
 [tool.ty.rules]
 unresolved-import = "ignore"
+# Blender PropertyGroup uses annotation syntax (name: StringProperty(...))
+# which is valid Blender but not valid Python type annotation syntax
+invalid-type-form = "ignore"

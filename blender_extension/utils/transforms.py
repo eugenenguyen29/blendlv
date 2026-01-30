@@ -26,7 +26,7 @@ def get_bounding_box(obj: bpy.types.Object) -> dict:
     """
     import math
 
-    if obj.type != 'MESH' or obj.data is None:
+    if obj.type != "MESH" or obj.data is None:
         return {"min": [0, 0, 0], "max": [0, 0, 0], "radius": 0.0}
 
     # Get world-space bounding box corners

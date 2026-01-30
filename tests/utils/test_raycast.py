@@ -2,9 +2,7 @@
 
 from __future__ import annotations
 
-from unittest.mock import MagicMock, patch
-
-import pytest
+from unittest.mock import MagicMock
 
 
 class TestGetMouseLocation:
@@ -19,9 +17,7 @@ class TestGetMouseLocation:
         result = get_mouse_location(mock_context, mock_event)
         assert result is None
 
-    def test_returns_none_when_mouse_outside_area(
-        self, mock_bpy_module, mock_context, mock_event
-    ):
+    def test_returns_none_when_mouse_outside_area(self, mock_bpy_module, mock_context, mock_event):
         """Should return None when mouse outside 3D view area."""
         from blender_extension.operators.placement import get_mouse_location
 
@@ -40,11 +36,10 @@ class TestGetMouseLocation:
         result = get_mouse_location(mock_context, mock_event)
         assert result is None
 
-    def test_returns_location_on_raycast_hit(
-        self, mock_bpy_module, mock_context, mock_event
-    ):
+    def test_returns_location_on_raycast_hit(self, mock_bpy_module, mock_context, mock_event):
         """Should return hit location when raycast succeeds."""
         import sys
+
         from blender_extension.operators.placement import get_mouse_location
 
         # Setup area
@@ -100,6 +95,7 @@ class TestGetMouseLocation:
     ):
         """Should temporarily hide excluded object during raycast."""
         import sys
+
         from blender_extension.operators.placement import get_mouse_location
 
         # Setup area
@@ -147,11 +143,10 @@ class TestGetMouseLocation:
         # Object should be restored to visible
         assert mock_object.hide_viewport is False
 
-    def test_returns_ground_plane_when_no_hit(
-        self, mock_bpy_module, mock_context, mock_event
-    ):
+    def test_returns_ground_plane_when_no_hit(self, mock_bpy_module, mock_context, mock_event):
         """Should project to ground plane when raycast misses."""
         import sys
+
         from blender_extension.operators.placement import get_mouse_location
 
         area = MagicMock()

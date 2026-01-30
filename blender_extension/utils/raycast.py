@@ -68,9 +68,7 @@ def raycast_from_mouse(
     depsgraph = context.evaluated_depsgraph_get()
 
     # Perform raycast
-    hit, location, normal, _, obj, _ = context.scene.ray_cast(
-        depsgraph, ray_origin, ray_direction
-    )
+    hit, location, normal, _, obj, _ = context.scene.ray_cast(depsgraph, ray_origin, ray_direction)
 
     if not hit:
         return False, None, None, None

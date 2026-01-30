@@ -4,8 +4,6 @@ from __future__ import annotations
 
 from unittest.mock import MagicMock
 
-import pytest
-
 
 class TestSanitizeName:
     """Tests for sanitize_name function - pure Python, no mocks needed."""

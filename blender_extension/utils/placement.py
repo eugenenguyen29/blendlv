@@ -11,12 +11,12 @@ import bpy
 # Entity type detection prefixes
 # Maps entity type to list of name prefixes that indicate that type
 ENTITY_TYPE_PREFIXES: dict[str, list[str]] = {
-    'static': ['Prop', 'Static', 'Decoration', 'Deco'],
-    'npc': ['Actor', 'NPC', 'Character', 'Enemy'],
-    'interactive': ['Interact', 'Pickup', 'Item', 'Door'],
-    'trigger': ['Trigger', 'Zone', 'Area'],
-    'audio': ['Audio', 'Sound', 'Music'],
-    'terrain': ['Terrain', 'Ground', 'Floor', 'Landscape'],
+    "static": ["Prop", "Static", "Decoration", "Deco"],
+    "npc": ["Actor", "NPC", "Character", "Enemy"],
+    "interactive": ["Interact", "Pickup", "Item", "Door"],
+    "trigger": ["Trigger", "Zone", "Area"],
+    "audio": ["Audio", "Sound", "Music"],
+    "terrain": ["Terrain", "Ground", "Floor", "Landscape"],
 }
 
 
@@ -50,7 +50,7 @@ def infer_entity_type(asset_name: str) -> str:
             if name_lower.startswith(prefix.lower()):
                 return entity_type
 
-    return 'static'
+    return "static"
 
 
 def apply_entity_settings(
@@ -72,16 +72,16 @@ def apply_entity_settings(
     Note:
         Does nothing if the object lacks the trivesta property group.
     """
-    if not hasattr(obj, 'trivesta'):
+    if not hasattr(obj, "trivesta"):
         return
 
     if auto_assign:
         entity_type = infer_entity_type(asset_name)
         obj.trivesta.entity_type = entity_type
 
-        if entity_type == 'terrain':
+        if entity_type == "terrain":
             obj.trivesta.is_terrain = True
     else:
         # Only sync terrain flag if already set to terrain type
-        if obj.trivesta.entity_type == 'terrain':
+        if obj.trivesta.entity_type == "terrain":
             obj.trivesta.is_terrain = True
