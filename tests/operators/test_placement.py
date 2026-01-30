@@ -41,13 +41,13 @@ class TestPlaceAsset:
         assert result.error == PlacementError.INVALID_PATH
 
     def test_returns_error_for_unsupported_id_type(self, mock_bpy_module, mock_context):
-        """Should return error for non-Object id types."""
+        """Should return error for non-Object/Collection id types."""
         from blender_extension.operators.placement import PlacementError, place_asset
 
         result = place_asset(
             mock_context,
             "TestLib",
-            "file.blend/Collection/MyCollection",
+            "file.blend/Material/MyMaterial",
             MagicMock(),
         )
         assert result.success is False
@@ -225,3 +225,97 @@ class TestDragAssetOperator:
 
         assert result == {"RUNNING_MODAL"}
         assert mock_object.location == mock_location
+
+
+class TestLinkCollectionFromBlend:
+    """Tests for link_collection_from_blend function."""
+
+    def test_returns_none_when_file_not_found(self, mock_bpy_module):
+        """Should return None if blend file doesn't exist."""
+        from blender_extension.operators.placement import link_collection_from_blend
+
+        with patch("os.path.exists", return_value=False):
+            result = link_collection_from_blend("/nonexistent/file.blend", "MyCollection")
+        assert result is None
+
+    def test_returns_none_when_collection_not_found(self, mock_bpy_module):
+        """Should return None if collection not in blend file."""
+        from blender_extension.operators.placement import link_collection_from_blend
+
+        with patch("os.path.exists", return_value=True):
+            result = link_collection_from_blend("/path/to/file.blend", "NonExistent")
+        assert result is None
+
+    def test_returns_collection_when_found(self, mock_bpy_module):
+        """Should return linked collection when successful."""
+        from blender_extension.operators.placement import link_collection_from_blend
+
+        mock_collection = MagicMock()
+        mock_collection.name = "Characters"
+        mock_collection.library = MagicMock()  # Has a library = is linked
+        mock_bpy_module.data.collections = [mock_collection]
+
+        with patch("os.path.exists", return_value=True):
+            result = link_collection_from_blend("/path/to/file.blend", "Characters")
+
+        assert result == mock_collection
+
+
+class TestCreateCollectionInstance:
+    """Tests for create_collection_instance function."""
+
+    def test_creates_empty_with_collection_instance(self, mock_bpy_module):
+        """Should create empty configured as collection instance."""
+        from blender_extension.operators.placement import create_collection_instance
+
+        mock_collection = MagicMock()
+        mock_collection.name = "MyCollection"
+
+        mock_empty = MagicMock()
+        mock_bpy_module.data.objects.new = MagicMock(return_value=mock_empty)
+
+        result = create_collection_instance(mock_collection)
+
+        mock_bpy_module.data.objects.new.assert_called_once_with(
+            name="MyCollection", object_data=None
+        )
+        assert result.instance_type == "COLLECTION"
+        assert result.instance_collection == mock_collection
+
+
+class TestPlaceAssetCollection:
+    """Tests for place_asset with Collection type."""
+
+    def test_places_collection_successfully(self, mock_bpy_module, mock_context):
+        """Should place collection instance at location."""
+        from blender_extension.operators.placement import place_asset
+
+        # Setup library
+        lib = MagicMock()
+        lib.name = "TestLib"
+        lib.path = "/library/path"
+        mock_bpy_module.context.preferences.filepaths.asset_libraries = [lib]
+
+        # Setup linked collection
+        mock_collection = MagicMock()
+        mock_collection.name = "Characters"
+        mock_collection.library = MagicMock()
+        mock_bpy_module.data.collections = [mock_collection]
+
+        # Setup empty object creation
+        mock_empty = MagicMock()
+        mock_bpy_module.data.objects.new = MagicMock(return_value=mock_empty)
+
+        mock_location = MagicMock()
+
+        with patch("os.path.exists", return_value=True):
+            result = place_asset(
+                mock_context,
+                "TestLib",
+                "assets.blend/Collection/Characters",
+                mock_location,
+            )
+
+        assert result.success is True
+        assert result.object == mock_empty
+        assert mock_empty.location == mock_location

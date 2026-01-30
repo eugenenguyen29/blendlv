@@ -29,9 +29,11 @@ def _libraries_load_context(blend_path: str, link: bool = False) -> Any:
     """Context manager for bpy.data.libraries.load()."""
     data_from = MagicMock()
     data_from.objects = ["Cube", "Sphere", "Cylinder"]
+    data_from.collections = ["Characters", "Props", "Vehicles"]
 
     data_to = MagicMock()
     data_to.objects = []
+    data_to.collections = []
 
     yield data_from, data_to
 

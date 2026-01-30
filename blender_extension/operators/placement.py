@@ -92,6 +92,40 @@ def link_object_from_blend(blend_path: str, object_name: str) -> bpy.types.Objec
     return None
 
 
+def link_collection_from_blend(blend_path: str, collection_name: str) -> bpy.types.Collection | None:
+    """Link a collection from an external blend file."""
+    debug(f"Linking collection '{collection_name}' from '{blend_path}'")
+
+    if not os.path.exists(blend_path):
+        debug(f"  File not found: {blend_path}")
+        return None
+
+    # Link the collection
+    with bpy.data.libraries.load(blend_path, link=True) as (data_from, data_to):
+        if collection_name in data_from.collections:
+            data_to.collections = [collection_name]
+        else:
+            debug(f"  Collection '{collection_name}' not found in {blend_path}")
+            debug(f"  Available collections: {data_from.collections}")
+            return None
+
+    # Find the linked collection (might have .001 suffix if name collision)
+    for coll in bpy.data.collections:
+        if coll.library and (coll.name == collection_name or coll.name.startswith(f"{collection_name}.")):
+            debug(f"  Linked: {coll.name}")
+            return coll
+
+    return None
+
+
+def create_collection_instance(collection: bpy.types.Collection) -> bpy.types.Object:
+    """Create an empty object that instances a collection."""
+    empty = bpy.data.objects.new(name=collection.name, object_data=None)
+    empty.instance_type = 'COLLECTION'
+    empty.instance_collection = collection
+    return empty
+
+
 def place_asset(
     context: Context,
     library_name: str,
@@ -124,8 +158,8 @@ def place_asset(
 
     debug(f"  Parsed: file={blend_file}, type={id_type}, name={asset_name}")
 
-    # Only handle Objects for now
-    if id_type != "Object":
+    # Only handle Objects and Collections
+    if id_type not in {"Object", "Collection"}:
         msg = f"Unsupported id_type: {id_type}"
         debug(f"  {msg}")
         return PlacementResult(success=False, error=PlacementError.UNSUPPORTED_TYPE, message=msg)
@@ -146,23 +180,44 @@ def place_asset(
         debug(f"  {msg}")
         return PlacementResult(success=False, error=PlacementError.FILE_NOT_FOUND, message=msg)
 
-    # Link the object
-    try:
-        linked_obj = link_object_from_blend(full_blend_path, asset_name)
-    except Exception as e:
-        msg = str(e)
-        debug(f"  Link failed: {msg}")
-        return PlacementResult(success=False, error=PlacementError.LINK_FAILED, message=msg)
+    # Handle based on id_type
+    if id_type == "Object":
+        # Link the object
+        try:
+            linked_obj = link_object_from_blend(full_blend_path, asset_name)
+        except Exception as e:
+            msg = str(e)
+            debug(f"  Link failed: {msg}")
+            return PlacementResult(success=False, error=PlacementError.LINK_FAILED, message=msg)
 
-    if not linked_obj:
-        msg = f"Asset not found after linking: {asset_name}"
-        debug(f"  {msg}")
-        return PlacementResult(success=False, error=PlacementError.ASSET_NOT_FOUND, message=msg)
+        if not linked_obj:
+            msg = f"Asset not found after linking: {asset_name}"
+            debug(f"  {msg}")
+            return PlacementResult(success=False, error=PlacementError.ASSET_NOT_FOUND, message=msg)
 
-    # Create an instance (copy) of the linked object
-    new_obj = linked_obj.copy()
-    context.collection.objects.link(new_obj)
-    new_obj.location = location
+        # Create an instance (copy) of the linked object
+        new_obj = linked_obj.copy()
+        context.collection.objects.link(new_obj)
+        new_obj.location = location
+
+    else:  # Collection
+        # Link the collection
+        try:
+            linked_coll = link_collection_from_blend(full_blend_path, asset_name)
+        except Exception as e:
+            msg = str(e)
+            debug(f"  Link failed: {msg}")
+            return PlacementResult(success=False, error=PlacementError.LINK_FAILED, message=msg)
+
+        if not linked_coll:
+            msg = f"Collection not found after linking: {asset_name}"
+            debug(f"  {msg}")
+            return PlacementResult(success=False, error=PlacementError.ASSET_NOT_FOUND, message=msg)
+
+        # Create collection instance
+        new_obj = create_collection_instance(linked_coll)
+        context.collection.objects.link(new_obj)
+        new_obj.location = location
 
     # Select the new object
     bpy.ops.object.select_all(action="DESELECT")
