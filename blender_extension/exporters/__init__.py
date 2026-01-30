@@ -3,10 +3,9 @@
 This module provides the main export functionality for the Trivesta Level
 extension. It handles:
 
-- Asset separation: Export unique assets to separate GLB files
+- Asset separation: Export unique assets to separate GLB files (deduplicated)
 - Island terrain: Export terrain meshes per island
 - Collision meshes: Export collision geometry per island
-- World elements: Export global elements (water, sky)
 - Manifest v2.0: Generate JSON manifest with all metadata
 
 Architecture:
@@ -44,7 +43,6 @@ from blender_extension.exporters.manifest import (
     ManifestSerializer,
     write_manifest,
 )
-from blender_extension.exporters.world import export_world_glb
 from blender_extension.utils.collections import build_collection_tree
 from blender_extension.utils.files import ensure_directory
 from blender_extension.utils.islands import detect_islands
@@ -60,11 +58,10 @@ def export_world(
     pipeline:
     1. Extract entity data from scene
     2. Detect islands
-    3. Export unique assets to assets/
+    3. Export unique assets to assets/ (deduplicated)
     4. Export island terrain to islands/
     5. Export collision meshes to collision/
-    6. Export world elements to world.glb
-    7. Generate manifest.json
+    6. Generate manifest.json
 
     Args:
         context: Blender context.
@@ -76,7 +73,6 @@ def export_world(
     Output Structure:
         {export_path}/
         ├── manifest.json
-        ├── world.glb
         ├── assets/
         │   └── {asset_id}.glb
         ├── islands/
@@ -132,19 +128,12 @@ def export_world(
             files_created.append(os.path.join(abs_export_path, f))
 
         # Export collision meshes
-        collision_paths = export_collision(
-            collision_objects, islands, abs_export_path, context
-        )
+        collision_paths = export_collision(collision_objects, islands, abs_export_path, context)
         for island_id, path in collision_paths.items():
             files_created.append(os.path.join(abs_export_path, path))
             # Update island collision_mesh reference in our ExportData copy
             if island_id in data.islands:
                 data.islands[island_id].collision_mesh = path
-
-        # Export world elements
-        world_files = export_world_glb(abs_export_path, context)
-        for f in world_files:
-            files_created.append(os.path.join(abs_export_path, f))
 
         # Write manifest
         manifest_success = write_manifest(data, abs_export_path, context)
@@ -158,8 +147,7 @@ def export_world(
         total_assets = len(asset_definitions)
         total_islands = len(islands)
         message = (
-            f"Exported {total_instances} instances, "
-            f"{total_assets} assets, {total_islands} islands"
+            f"Exported {total_instances} instances, {total_assets} assets, {total_islands} islands"
         )
 
         return ExportResult(
@@ -201,7 +189,6 @@ __all__ = [
     "export_assets",
     "export_islands",
     "export_collision",
-    "export_world_glb",
     # Manifest
     "ManifestSerializer",
     "write_manifest",

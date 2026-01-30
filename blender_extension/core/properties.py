@@ -8,10 +8,42 @@ for users to configure export behavior.
 from __future__ import annotations
 
 import bpy
-from bpy.props import BoolProperty, EnumProperty, FloatProperty, PointerProperty, StringProperty
+from bpy.props import (
+    BoolProperty,
+    CollectionProperty,
+    EnumProperty,
+    FloatProperty,
+    IntProperty,
+    PointerProperty,
+    StringProperty,
+)
 from bpy.types import PropertyGroup
 
 from .constants import DEFAULT_EXPORT_PATH, ENTITY_TYPES
+
+
+class DialogLine(PropertyGroup):
+    """Single dialog line entry for NPC conversations.
+
+    Used as items in a CollectionProperty on TrivestaObjectSettings.
+    Each line contains a speaker name and dialog text.
+
+    Attributes:
+        speaker: Character name who speaks this line.
+        text: Dialog text content for this line.
+    """
+
+    speaker: StringProperty(
+        name="Speaker",
+        description="Character name who speaks this line",
+        default="",
+    )
+
+    text: StringProperty(
+        name="Text",
+        description="Dialog text content for this line",
+        default="",
+    )
 
 
 class TrivestaSceneSettings(PropertyGroup):
@@ -30,19 +62,19 @@ class TrivestaSceneSettings(PropertyGroup):
         name="Export Path",
         description="Directory for exported files",
         default=DEFAULT_EXPORT_PATH,
-        subtype='DIR_PATH'
+        subtype="DIR_PATH",
     )
 
     separate_assets: BoolProperty(
         name="Separate Assets",
         description="Export instanced assets as separate GLB files",
-        default=False
+        default=False,
     )
 
     export_collision: BoolProperty(
         name="Export Collision",
         description="Export collision meshes as separate files",
-        default=True
+        default=True,
     )
 
     # World settings
@@ -52,7 +84,7 @@ class TrivestaSceneSettings(PropertyGroup):
         default=1024.0,
         min=0.0,
         soft_max=8192.0,
-        unit='LENGTH',
+        unit="LENGTH",
     )
 
     world_size_z: FloatProperty(
@@ -61,7 +93,7 @@ class TrivestaSceneSettings(PropertyGroup):
         default=1024.0,
         min=0.0,
         soft_max=8192.0,
-        unit='LENGTH',
+        unit="LENGTH",
     )
 
     water_level: FloatProperty(
@@ -70,7 +102,7 @@ class TrivestaSceneSettings(PropertyGroup):
         default=0.0,
         soft_min=-100.0,
         soft_max=100.0,
-        unit='LENGTH',
+        unit="LENGTH",
     )
 
 
@@ -90,19 +122,38 @@ class TrivestaObjectSettings(PropertyGroup):
         name="Entity Type",
         description="Type of game entity this object represents",
         items=ENTITY_TYPES,
-        default='static'
+        default="static",
     )
 
     is_terrain: BoolProperty(
-        name="Is Terrain",
-        description="Mark as terrain/ground mesh (not instanced)",
-        default=False
+        name="Is Terrain", description="Mark as terrain/ground mesh (not instanced)", default=False
     )
 
     is_collision: BoolProperty(
         name="Is Collision",
         description="Mark as collision-only mesh",
-        default=False
+        default=False,
+    )
+
+    # NPC Dialog System
+    dialog_lines: CollectionProperty(
+        type=DialogLine,
+        name="Dialog Lines",
+        description="NPC dialog line entries",
+    )
+
+    dialog_line_index: IntProperty(
+        name="Dialog Line Index",
+        description="Active dialog line selection index",
+        default=0,
+        min=0,
+    )
+
+    # Interactive Scripting
+    script_id: StringProperty(
+        name="Script ID",
+        description="Game engine handler reference for interactive behavior",
+        default="",
     )
 
 

@@ -67,6 +67,9 @@ class StaticExtractor(EntityExtractor):
         Extracts transform, bounding box, and custom properties.
         Uses trivesta.entity_type if set, otherwise defaults to 'static'.
 
+        For NPC entities, serializes dialog_lines into custom_properties["dialog"].
+        For Interactive entities, serializes script_id into custom_properties["script_id"].
+
         Args:
             obj: Blender mesh object to extract from.
 
@@ -80,6 +83,29 @@ class StaticExtractor(EntityExtractor):
         if hasattr(obj, "trivesta"):
             entity_type = obj.trivesta.entity_type
 
+        # Get base custom properties
+        custom_properties = get_custom_properties(obj)
+
+        # Serialize dialog/script_id for NPC and Interactive entities
+        if hasattr(obj, "trivesta"):
+            settings = obj.trivesta
+
+            # Serialize dialog lines for NPC entities
+            if settings.entity_type == "npc" and len(settings.dialog_lines) > 0:
+                dialog_data = []
+                for line in settings.dialog_lines:
+                    dialog_data.append(
+                        {
+                            "speaker": line.speaker,
+                            "text": line.text,
+                        }
+                    )
+                custom_properties["dialog"] = dialog_data
+
+            # Serialize script_id for Interactive entities
+            if settings.entity_type == "interactive" and settings.script_id:
+                custom_properties["script_id"] = settings.script_id
+
         return Instance(
             id=self._generate_instance_id(obj),
             name=obj.name,
@@ -90,5 +116,5 @@ class StaticExtractor(EntityExtractor):
             scale=tuple(transform["scale"]),
             bounding_box=get_bounding_box(obj),
             collection_path=self._get_collection_path(obj),
-            custom_properties=get_custom_properties(obj),
+            custom_properties=custom_properties,
         )
