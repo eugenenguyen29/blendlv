@@ -338,16 +338,12 @@ class TestEditDialogPopup:
         assert hasattr(TRIVESTA_OT_edit_dialog, "invoke")
         assert callable(getattr(TRIVESTA_OT_edit_dialog, "invoke", None))
 
-    def test_edit_dialog_invoke_returns_running_modal(
-        self, mock_bpy_module: MagicMock
-    ) -> None:
+    def test_edit_dialog_invoke_returns_running_modal(self, mock_bpy_module: MagicMock) -> None:
         """Should call invoke_popup and return its result."""
         from blender_extension.operators.dialog import TRIVESTA_OT_edit_dialog
 
         mock_context = MagicMock()
-        mock_context.window_manager.invoke_popup = MagicMock(
-            return_value={"RUNNING_MODAL"}
-        )
+        mock_context.window_manager.invoke_popup = MagicMock(return_value={"RUNNING_MODAL"})
 
         op = TRIVESTA_OT_edit_dialog()
         result = op.invoke(mock_context, MagicMock())
@@ -408,9 +404,7 @@ class TestEditDialogPopup:
 
         assert template_list_called
 
-    def test_edit_dialog_draw_shows_speaker_field(
-        self, mock_bpy_module: MagicMock
-    ) -> None:
+    def test_edit_dialog_draw_shows_speaker_field(self, mock_bpy_module: MagicMock) -> None:
         """Should render speaker property field in draw()."""
         from blender_extension.operators.dialog import TRIVESTA_OT_edit_dialog
 
@@ -442,13 +436,10 @@ class TestEditDialogPopup:
         # Verify prop was called with speaker
         all_calls = str(mock_layout.method_calls)
         assert "speaker" in all_calls.lower() or any(
-            "speaker" in str(call).lower()
-            for call in mock_layout.box.return_value.method_calls
+            "speaker" in str(call).lower() for call in mock_layout.box.return_value.method_calls
         )
 
-    def test_edit_dialog_draw_shows_text_field(
-        self, mock_bpy_module: MagicMock
-    ) -> None:
+    def test_edit_dialog_draw_shows_text_field(self, mock_bpy_module: MagicMock) -> None:
         """Should render text property field in draw()."""
         from blender_extension.operators.dialog import TRIVESTA_OT_edit_dialog
 
@@ -480,13 +471,10 @@ class TestEditDialogPopup:
         # Verify prop was called with text
         all_calls = str(mock_layout.method_calls)
         assert "text" in all_calls.lower() or any(
-            "text" in str(call).lower()
-            for call in mock_layout.box.return_value.method_calls
+            "text" in str(call).lower() for call in mock_layout.box.return_value.method_calls
         )
 
-    def test_edit_dialog_execute_returns_finished(
-        self, mock_bpy_module: MagicMock
-    ) -> None:
+    def test_edit_dialog_execute_returns_finished(self, mock_bpy_module: MagicMock) -> None:
         """Should return FINISHED from execute."""
         from blender_extension.operators.dialog import TRIVESTA_OT_edit_dialog
 

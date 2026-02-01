@@ -175,10 +175,10 @@ def create_bpy_mock() -> MagicMock:
 
 
 def create_mathutils_mock() -> MagicMock:
-    """Create a mathutils module mock with Vector support.
+    """Create a mathutils module mock with Vector and Matrix support.
 
     Returns:
-        MagicMock configured with Vector class.
+        MagicMock configured with Vector and Matrix classes.
     """
     mathutils = MagicMock()
 
@@ -244,7 +244,48 @@ def create_mathutils_mock() -> MagicMock:
         def __setitem__(self, idx: int, value: float) -> None:
             self._coords[idx] = value
 
+    class MockMatrix:
+        """Mock Matrix class with basic operations."""
+
+        def __init__(self, rows: list[list[float]] | None = None) -> None:
+            if rows is None:
+                # Default to 4x4 identity
+                self._rows = [
+                    [1.0, 0.0, 0.0, 0.0],
+                    [0.0, 1.0, 0.0, 0.0],
+                    [0.0, 0.0, 1.0, 0.0],
+                    [0.0, 0.0, 0.0, 1.0],
+                ]
+            else:
+                self._rows = [list(row) for row in rows]
+
+        @classmethod
+        def Identity(cls, size: int) -> MockMatrix:
+            """Create an identity matrix of given size."""
+            rows = [[1.0 if i == j else 0.0 for j in range(size)] for i in range(size)]
+            return cls(rows)
+
+        def __matmul__(self, other: MockVector) -> MockVector:
+            """Matrix @ Vector multiplication (transform a vector)."""
+            if isinstance(other, MockVector):
+                # For 4x4 matrix and 3D vector, treat as homogeneous coords
+                coords = list(other._coords)
+                while len(coords) < 4:
+                    coords.append(1.0 if len(coords) == 3 else 0.0)
+
+                result = []
+                for row in self._rows[:3]:  # Only first 3 rows for 3D result
+                    val = sum(row[i] * coords[i] for i in range(len(row)))
+                    result.append(val)
+
+                return MockVector(tuple(result))
+            return NotImplemented
+
+        def __repr__(self) -> str:
+            return f"Matrix({self._rows})"
+
     mathutils.Vector = MockVector
+    mathutils.Matrix = MockMatrix
     return mathutils
 
 

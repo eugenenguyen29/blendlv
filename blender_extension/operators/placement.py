@@ -92,7 +92,9 @@ def link_object_from_blend(blend_path: str, object_name: str) -> bpy.types.Objec
     return None
 
 
-def link_collection_from_blend(blend_path: str, collection_name: str) -> bpy.types.Collection | None:
+def link_collection_from_blend(
+    blend_path: str, collection_name: str
+) -> bpy.types.Collection | None:
     """Link a collection from an external blend file."""
     debug(f"Linking collection '{collection_name}' from '{blend_path}'")
 
@@ -111,7 +113,9 @@ def link_collection_from_blend(blend_path: str, collection_name: str) -> bpy.typ
 
     # Find the linked collection (might have .001 suffix if name collision)
     for coll in bpy.data.collections:
-        if coll.library and (coll.name == collection_name or coll.name.startswith(f"{collection_name}.")):
+        if coll.library and (
+            coll.name == collection_name or coll.name.startswith(f"{collection_name}.")
+        ):
             debug(f"  Linked: {coll.name}")
             return coll
 
@@ -121,7 +125,7 @@ def link_collection_from_blend(blend_path: str, collection_name: str) -> bpy.typ
 def create_collection_instance(collection: bpy.types.Collection) -> bpy.types.Object:
     """Create an empty object that instances a collection."""
     empty = bpy.data.objects.new(name=collection.name, object_data=None)
-    empty.instance_type = 'COLLECTION'
+    empty.instance_type = "COLLECTION"
     empty.instance_collection = collection
     return empty
 

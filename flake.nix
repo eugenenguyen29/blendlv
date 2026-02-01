@@ -31,11 +31,25 @@
             nodePackages.pnpm
           ];
 
+          # BLENDER_EXE: Environment variable for E2E tests
+          # E2E tests use this to locate Blender: $BLENDER_EXE --background --python tests/e2e/__init__.py
+          # Falls back to "blender" if not found in PATH (tests will fail gracefully)
           shellHook = ''
+            export BLENDER_EXE=$(which blender 2>/dev/null || echo "blender")
+
             echo "Trivesta Level dev environment"
             echo "  - uv: $(uv --version)"
             echo "  - node: $(node --version)"
-            echo "  - blender: $(blender --version | head -1)"
+
+            # Inform user about Blender configuration
+            if command -v blender &>/dev/null; then
+              echo "  - blender: $(blender --version 2>/dev/null | head -1)"
+              echo "  - BLENDER_EXE: $BLENDER_EXE"
+            else
+              echo "  - blender: not found in PATH"
+              echo "  Warning: Blender not found. E2E tests require Blender."
+              echo "  Set BLENDER_EXE manually or install Blender to run E2E tests."
+            fi
           '';
         };
       }

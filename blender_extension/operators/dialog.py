@@ -154,12 +154,8 @@ class TRIVESTA_OT_edit_dialog(Operator):
         col.operator("trivesta.add_dialog_line", icon="ADD", text="")
         col.operator("trivesta.remove_dialog_line", icon="REMOVE", text="")
         col.separator()
-        col.operator("trivesta.move_dialog_line", icon="TRIA_UP", text="").direction = (
-            "UP"
-        )
-        col.operator(
-            "trivesta.move_dialog_line", icon="TRIA_DOWN", text=""
-        ).direction = "DOWN"
+        col.operator("trivesta.move_dialog_line", icon="TRIA_UP", text="").direction = "UP"
+        col.operator("trivesta.move_dialog_line", icon="TRIA_DOWN", text="").direction = "DOWN"
 
         # Edit selected line
         if len(settings.dialog_lines) > 0:

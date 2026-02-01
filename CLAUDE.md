@@ -58,20 +58,66 @@ uv run script.py # run scripts
 
 ## Testing
 
-Write tests in `tests/` directory, not in implementation files.
+Two-tier strategy:
+- **Unit tests**: `uv run pytest` (mocked bpy, fast)
+- **E2E tests**: Real Blender process (requires Blender installed)
 
 ```bash
-uv run pytest              # run all tests
-uv run pytest tests/       # run specific directory
-uv run pytest -v           # verbose output
-uv run pytest -x           # stop on first failure
+uv run pytest              # all unit tests
+uv run pytest -x -v        # stop on fail, verbose
 ```
 
-Example test structure:
+### E2E Tests (IMPORTANT for subagents)
+
+**ALWAYS use the helper script** to run E2E tests - it automatically finds Blender:
+
+```bash
+# Recommended: Uses find_blender.py to locate Blender automatically
+uv run python tests/e2e/find_blender.py
+
+# Alternative if BLENDER_EXE is set:
+$BLENDER_EXE --background --factory-startup --python tests/e2e/__init__.py
 ```
-tests/
-  test_transforms.py      # tests for utils/transforms.py
-  test_collections.py     # tests for utils/collections.py
+
+The helper script searches for Blender in:
+1. `BLENDER_EXE` environment variable
+2. Common installation paths (snap, flatpak, system packages)
+3. System PATH
+
+If Blender is not found, it prints helpful installation instructions.
+
+### STRICT Testing Rules
+
+1. you **MUST** read @.claude/skills/blender-testing.md
+2. **NEVER `import bpy`** in test files - conftest.py pre-mocks it via `pytest_configure`
+3. **Import module under test INSIDE test methods**, not at module level
+4. **Use fixtures**: `mock_bpy_module`, `mock_context`, `mock_object`
+5. **NEVER define operators/panels in test files** - import from `blender_extension/`
+6. Add new mocks to `tests/mocks/`, never inline
+
+### Test Template
+
+```python
+"""Tests for operator_name."""
+from unittest.mock import MagicMock
+
+class TestOperatorName:
+    def test_execute_success(self, mock_bpy_module: MagicMock) -> None:
+        # Import INSIDE the test method
+        from blender_extension.operators.module import NAMESPACE_OT_op
+
+        mock_ctx = MagicMock()
+        mock_ctx.object = MagicMock()
+
+        op = NAMESPACE_OT_op()
+        assert op.execute(mock_ctx) == {"FINISHED"}
+
+    def test_poll_no_object(self, mock_bpy_module: MagicMock) -> None:
+        from blender_extension.operators.module import NAMESPACE_OT_op
+
+        mock_ctx = MagicMock()
+        mock_ctx.object = None
+        assert NAMESPACE_OT_op.poll(mock_ctx) is False
 ```
 
 ## Linting & Type Checking

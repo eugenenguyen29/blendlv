@@ -21,6 +21,7 @@ import bpy
 
 from blender_extension.core.data import Instance
 from blender_extension.entities.base import EntityExtractor
+from blender_extension.entities.collection import CollectionExtractor
 from blender_extension.entities.collision import CollisionExtractor
 from blender_extension.entities.static import StaticExtractor
 from blender_extension.entities.terrain import TerrainExtractor
@@ -36,13 +37,15 @@ def register_extractors() -> None:
     Typically called during extension initialization.
 
     Extractor Order (first match wins):
-        1. CollisionExtractor - Check collision first (highest priority)
-        2. TerrainExtractor - Then terrain
-        3. StaticExtractor - Default fallback (lowest priority)
+        1. CollectionExtractor - Collection instances (highest priority)
+        2. CollisionExtractor - Collision meshes
+        3. TerrainExtractor - Terrain meshes
+        4. StaticExtractor - Default fallback (lowest priority)
     """
     global _extractors
     _extractors = [
-        CollisionExtractor(),  # Check collision first
+        CollectionExtractor(),  # Check collection instances first
+        CollisionExtractor(),  # Then collision
         TerrainExtractor(),  # Then terrain
         StaticExtractor(),  # Default fallback
     ]
@@ -69,10 +72,30 @@ def get_extractor(obj: bpy.types.Object) -> EntityExtractor | None:
     return None
 
 
+def _is_supported_object(obj: bpy.types.Object) -> bool:
+    """Check if object type is supported for extraction.
+
+    Args:
+        obj: Blender object to check.
+
+    Returns:
+        True if object type is supported.
+    """
+    # Support MESH objects
+    if obj.type == "MESH":
+        return True
+
+    # Support EMPTY objects that are collection instances
+    if obj.type == "EMPTY" and obj.instance_type == "COLLECTION":
+        return True
+
+    return False
+
+
 def extract_all(
     context: bpy.types.Context,
 ) -> tuple[list[Instance], list[Instance], list[Instance]]:
-    """Extract all visible mesh objects from the scene.
+    """Extract all visible objects from the scene.
 
     Iterates through all objects in the scene, finds matching extractors,
     and categorizes extracted instances by type.
@@ -82,21 +105,28 @@ def extract_all(
 
     Returns:
         Tuple of (instances, terrain_objects, collision_objects):
-        - instances: Static mesh instances and other regular objects
+        - instances: Static mesh instances, collection instances, and other regular objects
         - terrain_objects: Objects marked as terrain
         - collision_objects: Objects marked as collision meshes
 
     Note:
-        Only visible MESH objects are processed. Hidden objects and
-        non-mesh objects (cameras, lights, etc.) are skipped.
+        Supported object types:
+        - MESH: Regular mesh objects
+        - EMPTY with instance_type='COLLECTION': Collection instances
+
+        Hidden objects and unsupported types (cameras, lights, etc.) are skipped.
     """
     instances: list[Instance] = []
     terrain_objects: list[Instance] = []
     collision_objects: list[Instance] = []
 
     for obj in context.scene.objects:
-        # Skip non-mesh and hidden objects
-        if obj.type != "MESH" or not obj.visible_get():
+        # Skip hidden objects
+        if not obj.visible_get():
+            continue
+
+        # Skip unsupported object types
+        if not _is_supported_object(obj):
             continue
 
         extractor = get_extractor(obj)
@@ -120,9 +150,10 @@ __all__ = [
     # Base class
     "EntityExtractor",
     # Extractor implementations
+    "CollectionExtractor",
+    "CollisionExtractor",
     "StaticExtractor",
     "TerrainExtractor",
-    "CollisionExtractor",
     # Registry functions
     "register_extractors",
     "get_extractor",

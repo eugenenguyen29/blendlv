@@ -5,6 +5,7 @@ name = "Trivesta Level"
 version = "0.1.0"
 tagline = "Level design pipeline for Three.js worlds"
 maintainer = "Trivesta"
+license = ["SPDX:MIT"]
 type = "add-on"
 
 blender_version_min = "4.2.0"
