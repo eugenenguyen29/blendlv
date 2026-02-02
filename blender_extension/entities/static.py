@@ -11,6 +11,7 @@ import bpy
 
 from blender_extension.core.data import Instance
 from blender_extension.entities.base import EntityExtractor
+from blender_extension.utils.naming import generate_asset_key
 from blender_extension.utils.transforms import (
     get_bounding_box,
     get_custom_properties,
@@ -118,3 +119,21 @@ class StaticExtractor(EntityExtractor):
             collection_path=self._get_collection_path(obj),
             custom_properties=custom_properties,
         )
+
+    def _generate_asset_key(self, obj: bpy.types.Object) -> str:
+        """Generate asset key for mesh object.
+
+        Overrides base class to always generate an asset key for local meshes.
+        This ensures GLB files are created for all static mesh objects,
+        not just linked/instanced ones.
+
+        For objects sharing the same mesh data, the same asset key is generated,
+        enabling asset deduplication.
+
+        Args:
+            obj: Blender mesh object to generate key for.
+
+        Returns:
+            Sanitized asset key string (never None).
+        """
+        return generate_asset_key(obj)
