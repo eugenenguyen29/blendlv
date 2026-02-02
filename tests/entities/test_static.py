@@ -6,6 +6,7 @@ are correctly serialized into Instance.custom_properties during extraction.
 
 from __future__ import annotations
 
+from typing import Any, cast
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -67,9 +68,10 @@ class TestStaticExtractorDialogExport:
         instance = extractor.extract(mock_object)
 
         assert "dialog" in instance.custom_properties
-        assert len(instance.custom_properties["dialog"]) == 2
-        assert instance.custom_properties["dialog"][0]["speaker"] == "Guard"
-        assert instance.custom_properties["dialog"][0]["text"] == "Halt!"
+        dialog = cast(list[dict[str, Any]], instance.custom_properties["dialog"])
+        assert len(dialog) == 2
+        assert dialog[0]["speaker"] == "Guard"
+        assert dialog[0]["text"] == "Halt!"
 
     def test_extract_npc_with_empty_dialog(
         self,
@@ -163,7 +165,8 @@ class TestStaticExtractorDialogExport:
         extractor = StaticExtractor()
         instance = extractor.extract(mock_object)
 
-        dialog_line = instance.custom_properties["dialog"][0]
+        dialog = cast(list[dict[str, Any]], instance.custom_properties["dialog"])
+        dialog_line = dialog[0]
         assert "speaker" in dialog_line
         assert "text" in dialog_line
         assert dialog_line["speaker"] == "Merchant"
@@ -197,7 +200,7 @@ class TestStaticExtractorDialogExport:
         extractor = StaticExtractor()
         instance = extractor.extract(mock_object)
 
-        dialog = instance.custom_properties["dialog"]
+        dialog = cast(list[dict[str, Any]], instance.custom_properties["dialog"])
         for i in range(5):
             assert dialog[i]["speaker"] == f"Speaker{i}"
             assert dialog[i]["text"] == f"Line {i}"

@@ -88,6 +88,7 @@ def mock_bpy_module() -> Generator[MagicMock]:
         The bpy mock object for additional configuration if needed.
     """
     global _bpy_mock
+    assert _bpy_mock is not None  # Ensure mock was initialized in pytest_configure
     # Reset mocks between tests to ensure isolation
     _bpy_mock.context.preferences.filepaths.asset_libraries = []
     _bpy_mock.data.objects.__iter__ = MagicMock(return_value=iter([]))

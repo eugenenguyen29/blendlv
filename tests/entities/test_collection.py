@@ -7,6 +7,7 @@ are correctly identified and extracted with proper asset keys and bounding boxes
 from __future__ import annotations
 
 import math
+from typing import Any, cast
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -376,7 +377,7 @@ class TestCollectionExtractorDialogSerialization:
 
         # Verify dialog was serialized
         assert "dialog" in instance.custom_properties
-        dialog_data = instance.custom_properties["dialog"]
+        dialog_data = cast(list[dict[str, Any]], instance.custom_properties["dialog"])
         assert len(dialog_data) == 2
         assert dialog_data[0] == {"speaker": "Guard", "text": "Halt! Who goes there?"}
         assert dialog_data[1] == {"speaker": "Guard", "text": "Show me your papers."}

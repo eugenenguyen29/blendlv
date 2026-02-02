@@ -340,9 +340,7 @@ class TestGetLibrarySource:
 
         assert result is None
 
-    def test_override_without_reference_returns_none(
-        self, mock_bpy_module: MagicMock
-    ) -> None:
+    def test_override_without_reference_returns_none(self, mock_bpy_module: MagicMock) -> None:
         """Test override_library without reference returns None."""
         from blender_extension.utils.transforms import get_library_source
 

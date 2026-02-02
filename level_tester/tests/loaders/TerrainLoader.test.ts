@@ -1,9 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { Group, Mesh, BoxGeometry, MeshBasicMaterial } from "three";
+import { Group, Mesh, BoxGeometry, MeshBasicMaterial, Matrix4 } from "three";
 import type { Island } from "../../src/types/manifest";
 
 // Control mock behavior via module-level flag
 let shouldFailLoad = false;
+let mockMeshPosition = { x: 0, y: 0, z: 0 };
 
 // Mock GLTFLoader
 vi.mock("three/addons/loaders/GLTFLoader.js", () => {
@@ -22,14 +23,20 @@ vi.mock("three/addons/loaders/GLTFLoader.js", () => {
           }
           return;
         }
-        // Create mock GLTF result
+        // Create mock GLTF result with parent node (simulates real GLB structure)
         const scene = new Group();
+        const parentNode = new Group();
+        parentNode.position.set(mockMeshPosition.x, mockMeshPosition.y, mockMeshPosition.z);
         const mesh = new Mesh(
           new BoxGeometry(1, 1, 1),
           new MeshBasicMaterial()
         );
         mesh.name = "terrain_mesh";
-        scene.add(mesh);
+        // Mesh local position is 0,0,0 - world position comes from parent
+        parentNode.add(mesh);
+        scene.add(parentNode);
+        // Update world matrices
+        scene.updateMatrixWorld(true);
         onLoad({ scene });
       }
     },
@@ -56,8 +63,9 @@ describe("TerrainLoader", () => {
   };
 
   beforeEach(async () => {
-    // Reset the failure flag
+    // Reset mock flags
     shouldFailLoad = false;
+    mockMeshPosition = { x: 0, y: 0, z: 0 };
 
     vi.resetModules();
     const configModule = await import("../../src/config");
@@ -159,5 +167,24 @@ describe("TerrainLoader", () => {
     expect(result.root).toBeInstanceOf(Group);
     expect(result.meshCount).toBe(0);
     expect(result.vertexCount).toBe(0);
+  });
+
+  it("should preserve world position when cloning meshes in group mode", async () => {
+    // Set mock mesh position (simulates mesh nested under a positioned parent node)
+    mockMeshPosition = { x: -4.82, y: 0, z: 0.55 };
+
+    setConfig({ terrainMode: "group" });
+    const loader = new TerrainLoader("/levels/demo");
+    const result = await loader.loadIslandTerrain(mockIsland);
+
+    expect(result.root).toBeInstanceOf(Group);
+    const group = result.root as Group;
+    expect(group.children.length).toBe(1);
+
+    const clonedMesh = group.children[0] as Mesh;
+    // Verify world position was applied to the clone (not 0,0,0)
+    expect(clonedMesh.position.x).toBeCloseTo(-4.82, 2);
+    expect(clonedMesh.position.y).toBeCloseTo(0, 2);
+    expect(clonedMesh.position.z).toBeCloseTo(0.55, 2);
   });
 });

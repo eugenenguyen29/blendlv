@@ -101,9 +101,7 @@ class TestTrivestaExportOperatorExecute:
             result = op.execute(mock_ctx)
 
             assert result == {"CANCELLED"}
-            op.report.assert_called_once_with(
-                {"ERROR"}, "Export failed with exception: Disk full"
-            )
+            op.report.assert_called_once_with({"ERROR"}, "Export failed with exception: Disk full")
 
 
 class TestTrivestaExportOperatorInvoke:
@@ -146,9 +144,7 @@ class TestTrivestaExportOperatorInvoke:
             assert result == {"FINISHED"}
             mock_ctx.window_manager.invoke_confirm.assert_not_called()
 
-    def test_invoke_large_scene_shows_confirmation(
-        self, mock_bpy_module: MagicMock
-    ) -> None:
+    def test_invoke_large_scene_shows_confirmation(self, mock_bpy_module: MagicMock) -> None:
         """Should show confirmation dialog when scene has >100 mesh objects."""
         from blender_extension.operators.export import TRIVESTA_OT_export
 

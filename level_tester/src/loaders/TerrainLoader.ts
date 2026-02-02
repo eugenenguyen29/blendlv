@@ -297,6 +297,8 @@ export class TerrainLoader {
 
     for (const mesh of meshes) {
       const clone = mesh.clone();
+      // Apply world transform - clone() only copies local transform (0,0,0 relative to parent)
+      mesh.matrixWorld.decompose(clone.position, clone.quaternion, clone.scale);
       clone.userData.terrainChunk = true;
       group.add(clone);
     }

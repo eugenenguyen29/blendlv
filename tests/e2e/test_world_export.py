@@ -234,9 +234,7 @@ class TestWorldExportAssetFiles(TrivestaTestCase):
             self.assertTrue(assets_dir.exists(), "assets/ directory should be created")
 
             glb_files = list(assets_dir.glob("*.glb"))
-            self.assertGreaterEqual(
-                len(glb_files), 1, "Should create at least one GLB file"
-            )
+            self.assertGreaterEqual(len(glb_files), 1, "Should create at least one GLB file")
 
     def test_rouge_creates_glb_files(self) -> None:
         """Verify rouge export creates GLB files for all body parts."""
@@ -257,9 +255,7 @@ class TestWorldExportAssetFiles(TrivestaTestCase):
 
             glb_files = list(assets_dir.glob("*.glb"))
             # Rouge has 8 visible mesh objects (body parts)
-            self.assertGreaterEqual(
-                len(glb_files), 1, "Should create GLB files for mesh objects"
-            )
+            self.assertGreaterEqual(len(glb_files), 1, "Should create GLB files for mesh objects")
 
     def test_glb_file_not_empty(self) -> None:
         """Verify created GLB files have content."""
@@ -278,6 +274,4 @@ class TestWorldExportAssetFiles(TrivestaTestCase):
 
             for glb_file in glb_files:
                 file_size = glb_file.stat().st_size
-                self.assertGreater(
-                    file_size, 0, f"GLB file {glb_file.name} should not be empty"
-                )
+                self.assertGreater(file_size, 0, f"GLB file {glb_file.name} should not be empty")

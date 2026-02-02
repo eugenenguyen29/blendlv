@@ -18,6 +18,7 @@ from blender_extension.core.constants import MANIFEST_VERSION
 from blender_extension.core.data import (
     AssetDefinition,
     CollectionNode,
+    CollectionNodeDict,
     ExportData,
     Instance,
     Island,
@@ -129,7 +130,7 @@ class ManifestSerializer:
     def _serialize_collection_tree(
         self,
         tree: CollectionNode | None,
-    ) -> dict[str, Any] | None:
+    ) -> CollectionNodeDict | None:
         """Serialize collection hierarchy.
 
         Args:

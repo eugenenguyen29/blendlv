@@ -50,10 +50,10 @@ class TRIVESTA_UL_asset_list(UIList):
 class AssetItem(bpy.types.PropertyGroup):
     """Property group for storing asset information."""
 
-    name: StringProperty(name="Asset Name")  # type: ignore[valid-type]
-    asset_key: StringProperty(name="Asset Key")  # type: ignore[valid-type]
-    source_object: StringProperty(name="Source Object Name")  # type: ignore[valid-type]
-    count: bpy.props.IntProperty(name="Instance Count", default=1)  # type: ignore[valid-type]
+    name: StringProperty(name="Asset Name")
+    asset_key: StringProperty(name="Asset Key")
+    source_object: StringProperty(name="Source Object Name")
+    count: bpy.props.IntProperty(name="Instance Count", default=1)
 
 
 class TRIVESTA_OT_refresh_assets(Operator):

@@ -3,6 +3,8 @@ from __future__ import annotations
 import bpy
 from mathutils import Vector
 
+from blender_extension.core.data import BoundingBox
+
 
 def get_object_transform(obj: bpy.types.Object) -> dict:
     """Extract world transform from a Blender object."""
@@ -17,7 +19,7 @@ def get_object_transform(obj: bpy.types.Object) -> dict:
     }
 
 
-def get_bounding_box(obj: bpy.types.Object) -> dict:
+def get_bounding_box(obj: bpy.types.Object) -> BoundingBox:
     """Get world-space bounding box of an object.
 
     Returns:

@@ -1,7 +1,7 @@
 {
   "_generated": "AUTO-GENERATED FILE - DO NOT EDIT MANUALLY. Re-export from Blender instead.",
   "version": "2.0",
-  "exported_at": "2026-02-02T10:26:48.676599+00:00",
+  "exported_at": "2026-02-02T11:45:51.043406+00:00",
   "blender_file": "unsaved",
   "asset_definitions": {
     "rouge_rouge": {
@@ -11,13 +11,13 @@
   },
   "instances": [
     {
-      "id": "rouge_1d4a40",
+      "id": "rouge_2cd5c0",
       "name": "Rouge",
       "entity_type": "npc",
       "position": [
-        -2.536076545715332,
-        2.080709457397461,
-        -1.0246243476867676
+        -4.705082893371582,
+        2.0807104110717773,
+        -1.3164973258972168
       ],
       "rotation": [
         0.0,
@@ -50,13 +50,52 @@
       "asset_id": "rouge_rouge"
     },
     {
-      "id": "rouge_001_b7c040",
+      "id": "rouge_001_2cd940",
       "name": "Rouge.001",
       "entity_type": "npc",
       "position": [
-        4.759250640869141,
-        2.080709457397461,
-        -2.6823182106018066
+        -3.0083532333374023,
+        0.5,
+        -3.5593924522399902
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        -0.0,
+        1.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounding_box": {
+        "min": [
+          -0.9723464250564575,
+          -0.0020256892312318087,
+          -0.5414556860923767
+        ],
+        "max": [
+          0.9723498225212097,
+          2.1709671020507812,
+          0.5577426552772522
+        ],
+        "radius": 1.5582023424427263
+      },
+      "collection_path": [
+        "Scene Collection",
+        "Collection"
+      ],
+      "asset_id": "rouge_rouge"
+    },
+    {
+      "id": "rouge_002_2ce0c0",
+      "name": "Rouge.002",
+      "entity_type": "npc",
+      "position": [
+        1.1216583251953125,
+        0.9000000953674316,
+        -3.4375033378601074
       ],
       "rotation": [
         0.0,
@@ -91,13 +130,13 @@
   ],
   "terrain_objects": [
     {
-      "id": "square_water_detail_empty_001_b7cc40",
-      "name": "square_water_detail_empty.001",
+      "id": "square_water_detail_empty_002_2cdbc0",
+      "name": "square_water_detail_empty.002",
       "entity_type": "terrain",
       "position": [
-        4.424332618713379,
+        -0.7776365280151367,
         0.0,
-        -1.1194462776184082
+        -1.457287311553955
       ],
       "rotation": [
         0.0,
@@ -112,30 +151,30 @@
       ],
       "bounding_box": {
         "min": [
-          3.424332618713379,
+          -1.7776365280151367,
           0.0,
-          -4.100727081298828
+          -4.438568115234375
         ],
         "max": [
-          7.4490580558776855,
+          2.24708890914917,
           2.080709457397461,
-          -0.1194462776184082
+          -0.4572873115539551
         ],
         "radius": 3.01572393996926
       },
       "collection_path": [
         "Scene Collection",
-        "Collection 2"
+        "Island_test"
       ]
     },
     {
-      "id": "square_water_detail_empty_1d5040",
-      "name": "square_water_detail_empty",
+      "id": "square_water_detail_empty_001_2cd6c0",
+      "name": "square_water_detail_empty.001",
       "entity_type": "terrain",
       "position": [
-        -2.3718175888061523,
+        -2.8930063247680664,
         0.0,
-        1.165717601776123
+        -3.544058322906494
       ],
       "rotation": [
         0.0,
@@ -150,20 +189,58 @@
       ],
       "bounding_box": {
         "min": [
-          -3.3718175888061523,
+          -3.8930063247680664,
           0.0,
-          -1.815563440322876
+          -6.525339126586914
         ],
         "max": [
-          0.6529078483581543,
+          0.13171911239624023,
           2.080709457397461,
-          2.165717601776123
+          -2.544058322906494
+        ],
+        "radius": 3.01572393996926
+      },
+      "collection_path": [
+        "Scene Collection",
+        "Island_test"
+      ]
+    },
+    {
+      "id": "square_water_detail_empty_2ccfc0",
+      "name": "square_water_detail_empty",
+      "entity_type": "terrain",
+      "position": [
+        -4.820206642150879,
+        0.0,
+        0.5504550933837891
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        -0.0,
+        1.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounding_box": {
+        "min": [
+          -5.820206642150879,
+          0.0,
+          -2.43082594871521
+        ],
+        "max": [
+          -1.7954812049865723,
+          2.080709457397461,
+          1.550455093383789
         ],
         "radius": 3.0157240186577727
       },
       "collection_path": [
         "Scene Collection",
-        "Collection 2"
+        "Island_test"
       ]
     }
   ],
@@ -175,10 +252,11 @@
         "children": {},
         "instances": []
       },
-      "Collection 2": {
-        "name": "Collection 2",
+      "Island_test": {
+        "name": "Island_test",
         "children": {},
         "instances": [
+          "square_water_detail_empty.002",
           "square_water_detail_empty.001",
           "square_water_detail_empty"
         ]
@@ -186,7 +264,50 @@
     },
     "instances": []
   },
-  "islands": {},
+  "islands": {
+    "island_test": {
+      "id": "island_test",
+      "name": "Island_test",
+      "world_position": [
+        -2.798921585083008,
+        0.0,
+        -1.4968016147613525
+      ],
+      "world_rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "bounds": {
+        "min": [
+          -5.820206642150879,
+          0.0,
+          -6.525339126586914
+        ],
+        "max": [
+          2.24708890914917,
+          2.080709457397461,
+          1.550455093383789
+        ],
+        "radius": 5.8
+      },
+      "instances": [],
+      "terrain_objects": [
+        "square_water_detail_empty.002",
+        "square_water_detail_empty.001",
+        "square_water_detail_empty"
+      ],
+      "terrain": {
+        "chunks": [
+          "islands/island_test/terrain/square_water_detail_empty_002.glb",
+          "islands/island_test/terrain/square_water_detail_empty_001.glb",
+          "islands/island_test/terrain/square_water_detail_empty.glb"
+        ],
+        "merged": null
+      }
+    }
+  },
   "world": {
     "size": [
       1024.0,
@@ -195,9 +316,9 @@
     "water_level": 0.0
   },
   "statistics": {
-    "total_instances": 2,
-    "total_terrain": 2,
+    "total_instances": 3,
+    "total_terrain": 3,
     "total_assets": 1,
-    "total_islands": 0
+    "total_islands": 1
   }
 }

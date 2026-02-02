@@ -4,6 +4,7 @@
 // level_tester/tests/ui/SettingsPanel.test.ts
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { getAvailableTerrainModes } from "../../src/config";
 
 describe("SettingsPanel", () => {
   let SettingsPanel: typeof import("../../src/ui/SettingsPanel").SettingsPanel;
@@ -127,5 +128,78 @@ describe("SettingsPanel", () => {
 
     panel.show();
     expect(panel.getElement().style.display).toBe("block");
+  });
+});
+
+describe("SettingsPanel terrain mode filtering", () => {
+  let SettingsPanel: typeof import("../../src/ui/SettingsPanel").SettingsPanel;
+  let container: HTMLDivElement;
+
+  beforeEach(async () => {
+    vi.resetModules();
+
+    container = document.createElement("div");
+    document.body.appendChild(container);
+
+    const module = await import("../../src/ui/SettingsPanel");
+    SettingsPanel = module.SettingsPanel;
+  });
+
+  afterEach(() => {
+    document.body.innerHTML = "";
+  });
+
+  it("should filter terrain mode options by available modes", () => {
+    const availableModes = getAvailableTerrainModes();
+    const panel = new SettingsPanel(() => {});
+    const element = panel.getElement();
+    const select = element.querySelector("select") as HTMLSelectElement;
+    const options = Array.from(select.options);
+
+    // All displayed options should be in available modes
+    options.forEach((option) => {
+      expect(availableModes).toContain(option.value);
+    });
+
+    // Number of options should match available modes
+    expect(options.length).toBe(availableModes.length);
+  });
+
+  it("should show all modes in dev environment", () => {
+    const availableModes = getAvailableTerrainModes();
+    const panel = new SettingsPanel(() => {});
+    const element = panel.getElement();
+    const select = element.querySelector("select") as HTMLSelectElement;
+
+    // Tests run in DEV mode
+    expect(select.options.length).toBe(3);
+    expect(availableModes.length).toBe(3);
+  });
+
+  it("should include merged option in all environments", () => {
+    const panel = new SettingsPanel(() => {});
+    const element = panel.getElement();
+    const select = element.querySelector("select") as HTMLSelectElement;
+    const optionValues = Array.from(select.options).map((opt) => opt.value);
+
+    expect(optionValues).toContain("merged");
+  });
+
+  it("should only show options that are in getAvailableTerrainModes", () => {
+    const availableModes = getAvailableTerrainModes();
+    const panel = new SettingsPanel(() => {});
+    const element = panel.getElement();
+    const select = element.querySelector("select") as HTMLSelectElement;
+    const displayedValues = Array.from(select.options).map((opt) => opt.value);
+
+    // Every displayed option must be in available modes
+    for (const value of displayedValues) {
+      expect(availableModes).toContain(value);
+    }
+
+    // Every available mode must be displayed
+    for (const mode of availableModes) {
+      expect(displayedValues).toContain(mode);
+    }
   });
 });

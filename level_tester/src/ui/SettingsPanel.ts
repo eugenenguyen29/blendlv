@@ -5,7 +5,7 @@
  * Positioned in top-right corner of viewport.
  */
 
-import type { TerrainRenderMode } from "../config";
+import { getAvailableTerrainModes, type TerrainRenderMode } from "../config";
 
 export type TerrainModeChangeCallback = (mode: TerrainRenderMode) => void;
 
@@ -67,11 +67,15 @@ export class SettingsPanel {
       outline: none;
     `;
 
-    const options: Array<{ value: TerrainRenderMode; label: string; description: string }> = [
+    const allOptions: Array<{ value: TerrainRenderMode; label: string; description: string }> = [
       { value: "merged", label: "Merged", description: "Best performance" },
       { value: "batched", label: "Batched", description: "Single draw call" },
       { value: "group", label: "Group", description: "Debug mode" },
     ];
+
+    // Filter by available modes (production: merged only, dev: all modes)
+    const availableModes = getAvailableTerrainModes();
+    const options = allOptions.filter((opt) => availableModes.includes(opt.value));
 
     for (const opt of options) {
       const option = document.createElement("option");

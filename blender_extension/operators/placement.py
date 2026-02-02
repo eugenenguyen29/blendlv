@@ -325,9 +325,9 @@ class TRIVESTA_OT_place_asset(Operator):
     bl_options = {"REGISTER", "UNDO"}
 
     # Properties passed by Asset Shelf
-    asset_library_type: IntProperty(options={"HIDDEN", "SKIP_SAVE"})  # type: ignore
-    asset_library_identifier: StringProperty(options={"HIDDEN", "SKIP_SAVE"})  # type: ignore
-    relative_asset_identifier: StringProperty(options={"HIDDEN", "SKIP_SAVE"})  # type: ignore
+    asset_library_type: IntProperty(options={"HIDDEN", "SKIP_SAVE"})
+    asset_library_identifier: StringProperty(options={"HIDDEN", "SKIP_SAVE"})
+    relative_asset_identifier: StringProperty(options={"HIDDEN", "SKIP_SAVE"})
 
     def invoke(self, context: Context, event: Event) -> set[str]:
         debug(
@@ -347,7 +347,7 @@ class TRIVESTA_OT_place_asset(Operator):
             location,
         )
 
-        if result.success:
+        if result.success and result.object is not None:
             self.report({"INFO"}, f"Placed: {result.object.name}")
             return {"FINISHED"}
 
@@ -363,9 +363,9 @@ class TRIVESTA_OT_drag_asset(Operator):
     bl_options = {"REGISTER", "UNDO"}
 
     # Properties passed by Asset Shelf
-    asset_library_type: IntProperty(options={"HIDDEN", "SKIP_SAVE"})  # type: ignore
-    asset_library_identifier: StringProperty(options={"HIDDEN", "SKIP_SAVE"})  # type: ignore
-    relative_asset_identifier: StringProperty(options={"HIDDEN", "SKIP_SAVE"})  # type: ignore
+    asset_library_type: IntProperty(options={"HIDDEN", "SKIP_SAVE"})
+    asset_library_identifier: StringProperty(options={"HIDDEN", "SKIP_SAVE"})
+    relative_asset_identifier: StringProperty(options={"HIDDEN", "SKIP_SAVE"})
 
     # State management
     _state: DragState = DragState.IDLE

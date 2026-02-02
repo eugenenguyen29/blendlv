@@ -56,10 +56,14 @@ def detect_islands(scene: bpy.types.Scene) -> dict[str, Island]:
             collision_mesh=None,
         )
 
-        # Collect instance IDs
+        # Collect instance IDs, separating terrain from other meshes
         for obj in get_collection_objects_recursive(collection):
             if obj.type == "MESH":
-                island.instances.append(obj.name)
+                # Check if object is marked as terrain
+                if hasattr(obj, "trivesta") and obj.trivesta.entity_type == "terrain":
+                    island.terrain_objects.append(obj.name)
+                else:
+                    island.instances.append(obj.name)
 
         islands[island_id] = island
 

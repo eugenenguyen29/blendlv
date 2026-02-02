@@ -45,8 +45,7 @@ def get_common_blender_paths() -> list[Path]:
             Path.home() / "bin/blender",
             Path("/opt/blender/blender"),
             # Steam
-            Path.home()
-            / ".steam/steam/steamapps/common/Blender/blender",
+            Path.home() / ".steam/steam/steamapps/common/Blender/blender",
         ]
     elif system == "Darwin":  # macOS
         paths = [
@@ -67,8 +66,7 @@ def get_common_blender_paths() -> list[Path]:
             Path(program_files) / "Blender Foundation" / "Blender 4.0" / "blender.exe",
             Path(program_files_x86) / "Blender Foundation" / "Blender" / "blender.exe",
             # Steam
-            Path(program_files_x86)
-            / "Steam/steamapps/common/Blender/blender.exe",
+            Path(program_files_x86) / "Steam/steamapps/common/Blender/blender.exe",
         ]
 
     return paths

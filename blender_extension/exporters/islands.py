@@ -109,6 +109,32 @@ def _export_merged_terrain(
     return [], None
 
 
+def _export_dual_terrain(
+    terrain_objects: list[bpy.types.Object],
+    island: Island,
+    terrain_dir: str,
+    context: bpy.types.Context,
+) -> tuple[list[str], str | None]:
+    """Export both individual chunks and merged terrain.
+
+    Args:
+        terrain_objects: List of terrain mesh objects to export.
+        island: Island these objects belong to.
+        terrain_dir: Directory to write GLB files.
+        context: Blender context.
+
+    Returns:
+        Tuple of (chunk_paths, merged_path) where both are populated.
+    """
+    # Export individual chunks
+    chunks, _ = _export_individual_chunks(terrain_objects, island, terrain_dir, context)
+
+    # Export merged terrain
+    _, merged = _export_merged_terrain(terrain_objects, island, terrain_dir, context)
+
+    return chunks, merged
+
+
 def export_island_terrain(
     island: Island,
     export_path: str,
@@ -121,12 +147,13 @@ def export_island_terrain(
         island: Island to export terrain for.
         export_path: Base export directory.
         context: Blender context.
-        export_mode: "merged" (default) or "individual"
+        export_mode: "merged" (default), "individual", or "dual"
 
     Returns:
         Tuple of (chunk_paths, merged_path) where:
         - Individual mode: ([chunk1.glb, chunk2.glb, ...], None)
         - Merged mode: ([], "islands/{id}/terrain/merged.glb")
+        - Dual mode: ([chunk1.glb, ...], "islands/{id}/terrain/merged.glb")
         - No terrain: ([], None)
     """
     terrain_objects = get_terrain_objects_for_island(island, context.scene)
@@ -138,7 +165,9 @@ def export_island_terrain(
 
     if export_mode == "individual":
         return _export_individual_chunks(terrain_objects, island, terrain_dir, context)
-    else:
+    elif export_mode == "dual":
+        return _export_dual_terrain(terrain_objects, island, terrain_dir, context)
+    else:  # "merged"
         return _export_merged_terrain(terrain_objects, island, terrain_dir, context)
 
 

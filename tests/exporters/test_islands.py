@@ -40,12 +40,8 @@ class TestExportIslandTerrainIndividualMode:
             "terrain_chunk_b": mock_obj_b,
         }.get(name)
 
-        with patch(
-            "blender_extension.exporters.islands.export_objects_to_glb"
-        ) as mock_export:
-            with patch(
-                "blender_extension.exporters.islands.get_export_subdir"
-            ) as mock_subdir:
+        with patch("blender_extension.exporters.islands.export_objects_to_glb") as mock_export:
+            with patch("blender_extension.exporters.islands.get_export_subdir") as mock_subdir:
                 mock_export.return_value = True
                 mock_subdir.return_value = "/tmp/exports/islands/test_island/terrain"
 
@@ -58,9 +54,7 @@ class TestExportIslandTerrainIndividualMode:
         assert "islands/test_island/terrain/terrain_chunk_b.glb" in chunks
         assert merged is None
 
-    def test_export_individual_returns_empty_when_no_terrain(
-        self, mock_bpy_module, mock_context
-    ):
+    def test_export_individual_returns_empty_when_no_terrain(self, mock_bpy_module, mock_context):
         """Individual mode should return empty lists when no terrain objects."""
         from blender_extension.core.data import Island
         from blender_extension.exporters.islands import export_island_terrain
@@ -81,9 +75,7 @@ class TestExportIslandTerrainIndividualMode:
         assert chunks == []
         assert merged is None
 
-    def test_export_individual_calls_export_per_object(
-        self, mock_bpy_module, mock_context
-    ):
+    def test_export_individual_calls_export_per_object(self, mock_bpy_module, mock_context):
         """Individual mode should call export_objects_to_glb once per object."""
         from blender_extension.core.data import Island
         from blender_extension.exporters.islands import export_island_terrain
@@ -106,12 +98,8 @@ class TestExportIslandTerrainIndividualMode:
 
         mock_context.scene.objects.get.side_effect = lambda name: mock_objs.get(name)
 
-        with patch(
-            "blender_extension.exporters.islands.export_objects_to_glb"
-        ) as mock_export:
-            with patch(
-                "blender_extension.exporters.islands.get_export_subdir"
-            ) as mock_subdir:
+        with patch("blender_extension.exporters.islands.export_objects_to_glb") as mock_export:
+            with patch("blender_extension.exporters.islands.get_export_subdir") as mock_subdir:
                 mock_export.return_value = True
                 mock_subdir.return_value = "/tmp/exports/islands/test_island/terrain"
 
@@ -151,12 +139,8 @@ class TestExportIslandTerrainMergedMode:
             "terrain_chunk_b": mock_obj_b,
         }.get(name)
 
-        with patch(
-            "blender_extension.exporters.islands.export_objects_to_glb"
-        ) as mock_export:
-            with patch(
-                "blender_extension.exporters.islands.get_export_subdir"
-            ) as mock_subdir:
+        with patch("blender_extension.exporters.islands.export_objects_to_glb") as mock_export:
+            with patch("blender_extension.exporters.islands.get_export_subdir") as mock_subdir:
                 mock_export.return_value = True
                 mock_subdir.return_value = "/tmp/exports/islands/test_island/terrain"
 
@@ -189,26 +173,18 @@ class TestExportIslandTerrainMergedMode:
             "terrain_chunk_a": mock_obj_a
         }.get(name)
 
-        with patch(
-            "blender_extension.exporters.islands.export_objects_to_glb"
-        ) as mock_export:
-            with patch(
-                "blender_extension.exporters.islands.get_export_subdir"
-            ) as mock_subdir:
+        with patch("blender_extension.exporters.islands.export_objects_to_glb") as mock_export:
+            with patch("blender_extension.exporters.islands.get_export_subdir") as mock_subdir:
                 mock_export.return_value = True
                 mock_subdir.return_value = "/tmp/exports/islands/test_island/terrain"
 
                 # Call without export_mode parameter
-                chunks, merged = export_island_terrain(
-                    island, "/tmp/exports", mock_context
-                )
+                chunks, merged = export_island_terrain(island, "/tmp/exports", mock_context)
 
         assert chunks == []
         assert merged == "islands/test_island/terrain/merged.glb"
 
-    def test_export_merged_returns_none_when_no_terrain(
-        self, mock_bpy_module, mock_context
-    ):
+    def test_export_merged_returns_none_when_no_terrain(self, mock_bpy_module, mock_context):
         """Merged mode should return empty lists when no terrain objects."""
         from blender_extension.core.data import Island
         from blender_extension.exporters.islands import export_island_terrain
@@ -229,9 +205,7 @@ class TestExportIslandTerrainMergedMode:
         assert chunks == []
         assert merged is None
 
-    def test_export_merged_calls_export_once_with_all_objects(
-        self, mock_bpy_module, mock_context
-    ):
+    def test_export_merged_calls_export_once_with_all_objects(self, mock_bpy_module, mock_context):
         """Merged mode should call export_objects_to_glb once with all objects."""
         from blender_extension.core.data import Island
         from blender_extension.exporters.islands import export_island_terrain
@@ -254,18 +228,12 @@ class TestExportIslandTerrainMergedMode:
 
         mock_context.scene.objects.get.side_effect = lambda name: mock_objs.get(name)
 
-        with patch(
-            "blender_extension.exporters.islands.export_objects_to_glb"
-        ) as mock_export:
-            with patch(
-                "blender_extension.exporters.islands.get_export_subdir"
-            ) as mock_subdir:
+        with patch("blender_extension.exporters.islands.export_objects_to_glb") as mock_export:
+            with patch("blender_extension.exporters.islands.get_export_subdir") as mock_subdir:
                 mock_export.return_value = True
                 mock_subdir.return_value = "/tmp/exports/islands/test_island/terrain"
 
-                export_island_terrain(
-                    island, "/tmp/exports", mock_context, export_mode="merged"
-                )
+                export_island_terrain(island, "/tmp/exports", mock_context, export_mode="merged")
 
         assert mock_export.call_count == 1
         # Verify all 3 objects were passed
@@ -298,12 +266,8 @@ class TestExportIslandTerrainEdgeCases:
             mock_obj if name == "exists" else None
         )
 
-        with patch(
-            "blender_extension.exporters.islands.export_objects_to_glb"
-        ) as mock_export:
-            with patch(
-                "blender_extension.exporters.islands.get_export_subdir"
-            ) as mock_subdir:
+        with patch("blender_extension.exporters.islands.export_objects_to_glb") as mock_export:
+            with patch("blender_extension.exporters.islands.get_export_subdir") as mock_subdir:
                 mock_export.return_value = True
                 mock_subdir.return_value = "/tmp/exports/islands/test_island/terrain"
 
@@ -337,12 +301,8 @@ class TestExportIslandTerrainEdgeCases:
             mock_obj if name == "terrain_chunk" else None
         )
 
-        with patch(
-            "blender_extension.exporters.islands.export_objects_to_glb"
-        ) as mock_export:
-            with patch(
-                "blender_extension.exporters.islands.get_export_subdir"
-            ) as mock_subdir:
+        with patch("blender_extension.exporters.islands.export_objects_to_glb") as mock_export:
+            with patch("blender_extension.exporters.islands.get_export_subdir") as mock_subdir:
                 mock_export.return_value = False  # Export fails
                 mock_subdir.return_value = "/tmp/exports/islands/test_island/terrain"
 
@@ -352,3 +312,197 @@ class TestExportIslandTerrainEdgeCases:
 
         assert chunks == []
         assert merged is None
+
+
+class TestExportIslandTerrainDualMode:
+    """Tests for dual terrain export mode (both chunks and merged)."""
+
+    def test_export_dual_creates_both_chunks_and_merged(self, mock_bpy_module, mock_context):
+        """Dual mode should export both individual chunks and merged GLB."""
+        from blender_extension.core.data import Island
+        from blender_extension.exporters.islands import export_island_terrain
+
+        island = Island(
+            id="test_island",
+            name="Test Island",
+            world_position=(0, 0, 0),
+            world_rotation=(0, 0, 0, 1),
+            bounds={"min": [0, 0, 0], "max": [10, 10, 10], "radius": 10.0},
+            terrain_objects=["terrain_chunk_a", "terrain_chunk_b"],
+        )
+
+        mock_obj_a = MagicMock()
+        mock_obj_a.name = "terrain_chunk_a"
+        mock_obj_a.type = "MESH"
+
+        mock_obj_b = MagicMock()
+        mock_obj_b.name = "terrain_chunk_b"
+        mock_obj_b.type = "MESH"
+
+        mock_context.scene.objects.get.side_effect = lambda name: {
+            "terrain_chunk_a": mock_obj_a,
+            "terrain_chunk_b": mock_obj_b,
+        }.get(name)
+
+        with patch("blender_extension.exporters.islands.export_objects_to_glb") as mock_export:
+            with patch("blender_extension.exporters.islands.get_export_subdir") as mock_subdir:
+                mock_export.return_value = True
+                mock_subdir.return_value = "/tmp/exports/islands/test_island/terrain"
+
+                chunks, merged = export_island_terrain(
+                    island, "/tmp/exports", mock_context, export_mode="dual"
+                )
+
+        # Both should be populated
+        assert len(chunks) == 2
+        assert "islands/test_island/terrain/terrain_chunk_a.glb" in chunks
+        assert "islands/test_island/terrain/terrain_chunk_b.glb" in chunks
+        assert merged == "islands/test_island/terrain/merged.glb"
+
+    def test_export_dual_calls_export_correct_number_of_times(self, mock_bpy_module, mock_context):
+        """Dual mode should call export_objects_to_glb N+1 times (N chunks + 1 merged)."""
+        from blender_extension.core.data import Island
+        from blender_extension.exporters.islands import export_island_terrain
+
+        island = Island(
+            id="test_island",
+            name="Test Island",
+            world_position=(0, 0, 0),
+            world_rotation=(0, 0, 0, 1),
+            bounds={"min": [0, 0, 0], "max": [10, 10, 10], "radius": 10.0},
+            terrain_objects=["chunk_1", "chunk_2", "chunk_3"],
+        )
+
+        mock_objs = {}
+        for name in ["chunk_1", "chunk_2", "chunk_3"]:
+            mock_obj = MagicMock()
+            mock_obj.name = name
+            mock_obj.type = "MESH"
+            mock_objs[name] = mock_obj
+
+        mock_context.scene.objects.get.side_effect = lambda name: mock_objs.get(name)
+
+        with patch("blender_extension.exporters.islands.export_objects_to_glb") as mock_export:
+            with patch("blender_extension.exporters.islands.get_export_subdir") as mock_subdir:
+                mock_export.return_value = True
+                mock_subdir.return_value = "/tmp/exports/islands/test_island/terrain"
+
+                export_island_terrain(island, "/tmp/exports", mock_context, export_mode="dual")
+
+        # 3 chunks + 1 merged = 4 calls
+        assert mock_export.call_count == 4
+
+    def test_export_dual_with_no_terrain_objects(self, mock_bpy_module, mock_context):
+        """Dual mode with no terrain should return empty results."""
+        from blender_extension.core.data import Island
+        from blender_extension.exporters.islands import export_island_terrain
+
+        island = Island(
+            id="empty_island",
+            name="Empty Island",
+            world_position=(0, 0, 0),
+            world_rotation=(0, 0, 0, 1),
+            bounds={"min": [0, 0, 0], "max": [5, 5, 5], "radius": 5.0},
+            terrain_objects=[],
+        )
+
+        chunks, merged = export_island_terrain(
+            island, "/tmp/exports", mock_context, export_mode="dual"
+        )
+
+        assert chunks == []
+        assert merged is None
+
+    def test_export_dual_chunks_match_individual_mode(self, mock_bpy_module, mock_context):
+        """Dual mode chunk paths should match individual mode output."""
+        from blender_extension.core.data import Island
+        from blender_extension.exporters.islands import export_island_terrain
+
+        island = Island(
+            id="test_island",
+            name="Test Island",
+            world_position=(0, 0, 0),
+            world_rotation=(0, 0, 0, 1),
+            bounds={"min": [0, 0, 0], "max": [10, 10, 10], "radius": 10.0},
+            terrain_objects=["terrain_a"],
+        )
+
+        mock_obj_a = MagicMock()
+        mock_obj_a.name = "terrain_a"
+        mock_obj_a.type = "MESH"
+
+        mock_context.scene.objects.get.side_effect = lambda name: {
+            "terrain_a": mock_obj_a,
+        }.get(name)
+
+        with patch("blender_extension.exporters.islands.export_objects_to_glb") as mock_export:
+            with patch("blender_extension.exporters.islands.get_export_subdir") as mock_subdir:
+                mock_export.return_value = True
+                mock_subdir.return_value = "/tmp/exports/islands/test_island/terrain"
+
+                individual_chunks, _ = export_island_terrain(
+                    island, "/tmp/exports", mock_context, export_mode="individual"
+                )
+
+        # Reset mocks
+        mock_context.scene.objects.get.side_effect = lambda name: {
+            "terrain_a": mock_obj_a,
+        }.get(name)
+
+        with patch("blender_extension.exporters.islands.export_objects_to_glb") as mock_export:
+            with patch("blender_extension.exporters.islands.get_export_subdir") as mock_subdir:
+                mock_export.return_value = True
+                mock_subdir.return_value = "/tmp/exports/islands/test_island/terrain"
+
+                dual_chunks, _ = export_island_terrain(
+                    island, "/tmp/exports", mock_context, export_mode="dual"
+                )
+
+        assert individual_chunks == dual_chunks
+
+    def test_export_dual_merged_matches_merged_mode(self, mock_bpy_module, mock_context):
+        """Dual mode merged path should match merged mode output."""
+        from blender_extension.core.data import Island
+        from blender_extension.exporters.islands import export_island_terrain
+
+        island = Island(
+            id="test_island",
+            name="Test Island",
+            world_position=(0, 0, 0),
+            world_rotation=(0, 0, 0, 1),
+            bounds={"min": [0, 0, 0], "max": [10, 10, 10], "radius": 10.0},
+            terrain_objects=["terrain_a"],
+        )
+
+        mock_obj_a = MagicMock()
+        mock_obj_a.name = "terrain_a"
+        mock_obj_a.type = "MESH"
+
+        mock_context.scene.objects.get.side_effect = lambda name: {
+            "terrain_a": mock_obj_a,
+        }.get(name)
+
+        with patch("blender_extension.exporters.islands.export_objects_to_glb") as mock_export:
+            with patch("blender_extension.exporters.islands.get_export_subdir") as mock_subdir:
+                mock_export.return_value = True
+                mock_subdir.return_value = "/tmp/exports/islands/test_island/terrain"
+
+                _, merged_path = export_island_terrain(
+                    island, "/tmp/exports", mock_context, export_mode="merged"
+                )
+
+        # Reset mocks
+        mock_context.scene.objects.get.side_effect = lambda name: {
+            "terrain_a": mock_obj_a,
+        }.get(name)
+
+        with patch("blender_extension.exporters.islands.export_objects_to_glb") as mock_export:
+            with patch("blender_extension.exporters.islands.get_export_subdir") as mock_subdir:
+                mock_export.return_value = True
+                mock_subdir.return_value = "/tmp/exports/islands/test_island/terrain"
+
+                _, dual_merged = export_island_terrain(
+                    island, "/tmp/exports", mock_context, export_mode="dual"
+                )
+
+        assert merged_path == dual_merged

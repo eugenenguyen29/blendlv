@@ -1,364 +1,259 @@
 # Blender Extension Data Schemas
 
-## Overview
-
-Data structures and JSON schemas used by the Blender extension v2.0.
+Location: `blender_extension/core/data.py`
 
 ## Core Dataclasses
 
-Location: `blender_extension/core/data.py`
-
 ### Instance
 
-Represents a placed object instance:
 ```python
 @dataclass
 class Instance:
-    id: str                    # Unique instance ID
-    name: str                  # Object name
-    asset_id: str | None       # Reference to asset_definitions key
-    position: tuple[float, float, float]  # Three.js coords
-    rotation: tuple[float, float, float, float]  # Quaternion
+    id: str                      # Unique ID (name + hash)
+    name: str                    # Display name
+    asset_id: str | None         # Reference to AssetDefinition (None for terrain/collision)
+    entity_type: str             # "static", "npc", "interactive", "terrain", "collision", etc.
+    position: tuple[float, float, float]    # Three.js Y-up coords
+    rotation: tuple[float, float, float, float]  # Quaternion (x, y, z, w)
     scale: tuple[float, float, float]
-    bounding_box: dict         # {min: [...], max: [...]}
-    custom_properties: dict
-    island_id: str | None      # Parent island (if any)
+    bounding_box: BoundingBox    # {min, max, radius}
+    collection_path: list[str]   # Hierarchy path ["Scene", "Island_01", ...]
+    custom_properties: dict      # User props, dialog, script_id
+```
+
+### AssetDefinition
+
+```python
+@dataclass
+class AssetDefinition:
+    id: str              # Asset identifier
+    file: str            # Relative path to GLB
+    source: str | None   # Linked library path (if linked)
 ```
 
 ### Island
 
-Represents an island/zone in the world:
 ```python
 @dataclass
 class Island:
-    id: str                    # e.g., "island_01"
-    name: str                  # e.g., "Island_01"
+    id: str                      # e.g., "island_01"
+    name: str                    # e.g., "Island_01"
     world_position: tuple[float, float, float]
     world_rotation: tuple[float, float, float, float]
-    bounds: dict               # {min, max, center, radius}
-    instances: list[str]       # Instance IDs in this island
-    terrain_objects: list[str] # Terrain instance IDs
-    collision_mesh: str | None # Path to collision GLB
+    bounds: BoundingBox
+    instances: list[str]         # Instance names
+    terrain_objects: list[str]
+    terrain: IslandTerrain       # Terrain file paths (nested structure)
+    collision_mesh: str | None   # Path to collision GLB
+
+@dataclass
+class IslandTerrain:
+    chunks: list[str]            # Chunk paths (individual terrain GLBs)
+    merged: str | None           # Merged terrain GLB path
 ```
 
 ### ExportData
 
-Container for all export data:
 ```python
 @dataclass
 class ExportData:
+    asset_definitions: dict[str, AssetDefinition]
     instances: list[Instance]
     terrain_objects: list[Instance]
-    collision_objects: list[Instance]
-    asset_definitions: dict[str, dict]
     islands: dict[str, Island]
-    collections: dict          # Collection tree
+    collection_tree: CollectionNode | None
+    by_asset_id: dict[str, list[Instance]]     # Computed index
+    by_entity_type: dict[str, list[Instance]]  # Computed index
+
+    def build_indices(self): ...  # Populate computed indices
 ```
 
-## Scene Settings
-
-**Class**: `TrivestaSceneSettings` (PropertyGroup)
-
-**Location**: Attached to `bpy.types.Scene.trivesta`
+### CollectionNode
 
 ```python
-{
-    "export_path": str,        # Default: "//exports/"
-    "separate_assets": bool,   # Default: True
-    "export_collision": bool,  # Default: True
-    "export_islands": bool,    # Default: True
-    "world_size_x": float,     # Default: 1024.0
-    "world_size_z": float,     # Default: 1024.0
-    "water_level": float,      # Default: 0.0
-}
+@dataclass
+class CollectionNode:
+    name: str
+    children: dict[str, CollectionNode]
+    instance_ids: list[str]
 ```
 
-Access: `context.scene.trivesta.export_path`
-
-## Object Settings
-
-**Class**: `TrivestaObjectSettings` (PropertyGroup)
-
-**Location**: Attached to `bpy.types.Object.trivesta`
+### BoundingBox (TypedDict)
 
 ```python
-{
-    "entity_type": str,        # Enum: static, npc, interactive, trigger, audio, terrain
-    "is_terrain": bool,        # Mark as terrain mesh
-    "is_collision": bool,      # Mark as collision mesh
-
-    # NPC Dialog System (entity_type == "npc")
-    "dialog_lines": CollectionProperty,  # List of DialogLine
-    "dialog_line_index": int,            # Active selection index
-
-    # Interactive Scripting (entity_type == "interactive")
-    "script_id": str,          # Game engine handler reference
-}
+class BoundingBox(TypedDict):
+    min: list[float]   # [x, y, z]
+    max: list[float]   # [x, y, z]
+    radius: float
 ```
 
-Access: `context.object.trivesta.entity_type`
+## PropertyGroups
 
-### DialogLine PropertyGroup
+### TrivestaSceneSettings
 
-```python
-{
-    "speaker": str,            # Character name (e.g., "Merchant")
-    "text": str,               # Dialog content
-}
-```
+Attached to `bpy.types.Scene.trivesta`:
 
-### Entity Types
+| Property | Type | Default |
+|----------|------|---------|
+| `export_path` | str | `"//exports/"` |
+| `separate_assets` | bool | `True` |
+| `export_collision` | bool | `True` |
+| `terrain_export_mode` | Enum | `"merged"` (merged, individual, dual) |
+| `world_size_x` | float | `1024.0` |
+| `world_size_z` | float | `1024.0` |
+| `water_level` | float | `0.0` |
 
-| Type | Description | Extra Properties |
-|------|-------------|------------------|
-| `static` | Merged for rendering | - |
-| `npc` | Character with AI | `dialog_lines[]` |
-| `interactive` | Player interaction | `script_id` |
-| `trigger` | Invisible trigger zone | - |
-| `audio` | Audio source | - |
-| `terrain` | Ground/terrain mesh | - |
+### TrivestaObjectSettings
 
-## Manifest v2.0 JSON Schema
+Attached to `bpy.types.Object.trivesta`:
 
-**File**: `manifest.json`
+| Property | Type | Description |
+|----------|------|-------------|
+| `entity_type` | Enum | static, npc, interactive, trigger, audio, terrain |
+| `is_terrain` | bool | Mark as terrain mesh |
+| `is_collision` | bool | Mark as collision mesh |
+| `dialog_lines` | Collection | NPC dialog (when entity_type="npc") |
+| `dialog_line_index` | int | Active dialog selection |
+| `script_id` | str | Interactive handler (when entity_type="interactive") |
+
+### DialogLine
+
+| Property | Type |
+|----------|------|
+| `speaker` | str |
+| `text` | str |
+
+## Manifest v2.0 Schema
 
 ```json
 {
+  "_generated": "AUTO-GENERATED FILE",
   "version": "2.0",
-  "exported_at": "<ISO 8601 UTC timestamp>",
-  "blender_file": "<absolute path to .blend>",
+  "exported_at": "ISO timestamp",
+  "blender_file": "path/to/file.blend",
 
   "asset_definitions": {
-    "<asset_id>": {
-      "name": "<asset name>",
-      "file": "assets/<asset_id>.glb",
-      "source_library": "<source .blend path or null>",
-      "bounding_box": {"min": [x,y,z], "max": [x,y,z]}
+    "{asset_id}": {
+      "id": "{asset_id}",
+      "file": "assets/{asset_id}.glb",
+      "source": "library/path" // or null
     }
   },
 
-  "instances": [
-    {
-      "id": "<instance_id>",
-      "name": "<object name>",
-      "asset_id": "<references asset_definitions key>",
-      "position": [x, y, z],
-      "rotation": [x, y, z, w],
-      "scale": [x, y, z],
-      "bounding_box": {"min": [...], "max": [...]},
-      "custom_properties": {},
-      "island_id": "<island_id or null>"
+  "instances": [{
+    "id": "unique_id",
+    "name": "object_name",
+    "asset_id": "{asset_id}",  // or null for terrain/collision
+    "entity_type": "static|npc|interactive|terrain|collision",
+    "position": [x, y, z],     // Three.js Y-up
+    "rotation": [x, y, z, w],  // Quaternion
+    "scale": [x, y, z],
+    "bounding_box": {"min": [], "max": [], "radius": float},
+    "collection_path": ["Path", "To", "Object"],
+    "custom_properties": {
+      "dialog": [{"speaker": "", "text": ""}],  // NPC
+      "script_id": "handler_name"                // Interactive
     }
-  ],
+  }],
 
-  "terrain_objects": [
-    {
-      "id": "<instance_id>",
-      "name": "<terrain name>",
-      "file": "islands/<island_id>.glb",
-      "position": [x, y, z],
-      "rotation": [x, y, z, w],
-      "scale": [x, y, z],
-      "island_id": "<island_id>"
-    }
-  ],
+  "terrain_objects": [/* same as instances */],
 
   "collections": {
     "name": "Scene Collection",
-    "instances": ["<instance_ids>"],
-    "children": {
-      "<child_name>": { ... recursive ... }
-    }
+    "children": { /* recursive */ },
+    "instances": ["instance_ids"]
   },
 
   "islands": {
-    "<island_id>": {
-      "name": "<Island_Name>",
+    "{island_id}": {
+      "id": "{island_id}",
+      "name": "Island_01",
       "world_position": [x, y, z],
       "world_rotation": [x, y, z, w],
-      "bounds": {
-        "min": [x, y, z],
-        "max": [x, y, z],
-        "center": [x, y, z],
-        "radius": <float>
+      "bounds": {"min": [], "max": [], "radius": float},
+      "instances": ["ids"],
+      "terrain_objects": ["ids"],
+      "terrain": {
+        "chunks": ["terrain/chunk_*.glb"],
+        "merged": "terrain/merged.glb"
       },
-      "instances": ["<instance_ids in this island>"],
-      "terrain_objects": ["<terrain_ids>"],
-      "collision_mesh": "collision/<island_id>.glb"
+      "collision_mesh": "collision/{island_id}.glb"
     }
   },
 
-  "world": {
-    "size": [<world_size_x>, <world_size_z>],
-    "water_level": <float>
-  },
-
-  "statistics": {
-    "total_instances": <int>,
-    "unique_assets": <int>,
-    "terrain_objects": <int>,
-    "islands": <int>,
-    "files_created": <int>
-  }
+  "world": {"size": [x, z], "water_level": float},
+  "statistics": {"total_instances": int, "total_assets": int, ...}
 }
 ```
 
-**Coordinate System**: Three.js (Y-up)
-
-## TypeScript Interfaces (Consumer)
+## TypeScript Interfaces
 
 ```typescript
 interface Manifest {
   version: "2.0";
-  exported_at: string;
-  blender_file: string;
   asset_definitions: Record<string, AssetDefinition>;
   instances: Instance[];
-  terrain_objects: TerrainObject[];
+  terrain_objects: Instance[];
   collections: CollectionNode;
   islands: Record<string, Island>;
-  world: WorldSettings;
+  world: { size: [number, number]; water_level: number };
   statistics: Statistics;
-}
-
-interface AssetDefinition {
-  name: string;
-  file: string;
-  source_library: string | null;
-  bounding_box: BoundingBox;
 }
 
 interface Instance {
   id: string;
   name: string;
   asset_id: string | null;
+  entity_type: string;
   position: [number, number, number];
   rotation: [number, number, number, number];
   scale: [number, number, number];
-  bounding_box: BoundingBox;
+  bounding_box: { min: number[]; max: number[]; radius: number };
+  collection_path: string[];
   custom_properties: Record<string, unknown>;
-  island_id: string | null;
 }
 
-interface TerrainObject {
+interface AssetDefinition {
+  id: string;
+  file: string;
+  source: string | null;
+}
+
+interface IslandTerrain {
+  chunks: string[];
+  merged: string | null;
+}
+
+interface Island {
   id: string;
   name: string;
-  file: string;
-  position: [number, number, number];
-  rotation: [number, number, number, number];
-  scale: [number, number, number];
-  island_id: string;
+  world_position: [number, number, number];
+  world_rotation: [number, number, number, number];
+  bounds: { min: number[]; max: number[]; radius: number };
+  instances: string[];
+  terrain_objects: string[];
+  terrain: IslandTerrain;
+  collision_mesh: string | null;
 }
 
 interface CollectionNode {
   name: string;
-  instances: string[];
   children: Record<string, CollectionNode>;
-}
-
-interface Island {
-  name: string;
-  world_position: [number, number, number];
-  world_rotation: [number, number, number, number];
-  bounds: {
-    min: [number, number, number];
-    max: [number, number, number];
-    center: [number, number, number];
-    radius: number;
-  };
   instances: string[];
-  terrain_objects: string[];
-  collision_mesh: string | null;
 }
 
-interface WorldSettings {
-  size: [number, number];
-  water_level: number;
-}
-
-// NPC Dialog custom_properties
-interface NPCCustomProperties {
-  dialog: Array<{
-    speaker: string;
-    text: string;
-  }>;
-}
-
-// Interactive custom_properties
-interface InteractiveCustomProperties {
-  script_id: string;
-}
-
-interface Statistics {
-  total_instances: number;
-  unique_assets: number;
-  terrain_objects: number;
-  islands: number;
-  files_created: number;
-}
-
-interface BoundingBox {
-  min: [number, number, number];
-  max: [number, number, number];
-}
-```
-
-## Custom Properties
-
-Objects can have arbitrary custom properties accessible in manifest:
-
-| Property | Type | Purpose |
-|----------|------|---------|
-| `trivesta_manifest_only` | bool | Exclude from GLB, include in manifest |
-| `asset_type` | str | Asset classification |
-| `*` | any | User-defined metadata |
-
-### NPC Dialog Export (entity_type == "npc")
-
-```json
-{
-  "id": "npc_merchant_001",
-  "name": "Merchant",
-  "entity_type": "npc",
-  "asset_id": "npc_merchant",
-  "position": [10.0, 0.0, 5.0],
-  "custom_properties": {
-    "dialog": [
-      { "speaker": "Merchant", "text": "Welcome to my shop!" },
-      { "speaker": "Merchant", "text": "What would you like?" }
-    ]
-  }
-}
-```
-
-### Interactive Script Export (entity_type == "interactive")
-
-```json
-{
-  "id": "interactive_chest_001",
-  "name": "TreasureChest",
-  "entity_type": "interactive",
-  "asset_id": "chest_wooden",
-  "position": [20.0, 0.0, 15.0],
-  "custom_properties": {
-    "script_id": "chest_open_handler"
-  }
-}
+// NPC custom_properties.dialog
+type Dialog = Array<{ speaker: string; text: string }>;
 ```
 
 ## GLB Export Settings
 
-Settings passed to `bpy.ops.export_scene.gltf()`:
-
 ```python
-{
-    "filepath": "<path>/<file>.glb",
-    "export_format": "GLB",
-    "use_selection": True,
-    "export_apply": True,         # Apply transforms
-    "export_texcoords": True,
-    "export_normals": True,
-    "export_materials": "EXPORT",
-    "export_yup": True,           # Three.js coordinate system
-}
+bpy.ops.export_scene.gltf(
+    filepath="...",
+    export_format="GLB",
+    use_selection=True,
+    export_apply=True,
+    export_yup=True,  # Three.js coords
+)
 ```

@@ -70,6 +70,7 @@ class TestCollectionInstanceNPC(TrivestaTestCase):
                     break
 
             self.assertIsNotNone(guard, "Guard instance should be in manifest")
+            assert guard is not None  # Type narrowing
             self.assertEqual(guard["entity_type"], "npc")
 
             # Verify dialog was serialized
@@ -119,6 +120,7 @@ class TestCollectionInstanceNPC(TrivestaTestCase):
                     break
 
             self.assertIsNotNone(door, "Door instance should be in manifest")
+            assert door is not None  # Type narrowing
             self.assertEqual(door["entity_type"], "interactive")
             self.assertIn("script_id", door["custom_properties"])
             self.assertEqual(door["custom_properties"]["script_id"], "door_open_close")
@@ -161,6 +163,7 @@ class TestCollectionInstanceNPC(TrivestaTestCase):
                     break
 
             self.assertIsNotNone(prop, "Prop instance should be in manifest")
+            assert prop is not None  # Type narrowing
             self.assertEqual(prop["entity_type"], "static")
             # Dialog should NOT be in custom_properties
             self.assertNotIn("dialog", prop.get("custom_properties", {}))

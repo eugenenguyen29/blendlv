@@ -90,9 +90,7 @@ def make_mock_context() -> MagicMock:
 class TestManifestSerializerSerialize:
     """Tests for ManifestSerializer.serialize()."""
 
-    def test_serialize_returns_dict_with_required_keys(
-        self, mock_bpy_module: MagicMock
-    ) -> None:
+    def test_serialize_returns_dict_with_required_keys(self, mock_bpy_module: MagicMock) -> None:
         """serialize() returns dict with all required top-level keys."""
         from blender_extension.exporters.manifest import ManifestSerializer
 
@@ -116,9 +114,7 @@ class TestManifestSerializerSerialize:
         assert "world" in result
         assert "statistics" in result
 
-    def test_serialize_uses_manifest_version(
-        self, mock_bpy_module: MagicMock
-    ) -> None:
+    def test_serialize_uses_manifest_version(self, mock_bpy_module: MagicMock) -> None:
         """serialize() uses MANIFEST_VERSION from constants."""
         from blender_extension.core.constants import MANIFEST_VERSION
         from blender_extension.exporters.manifest import ManifestSerializer
@@ -131,9 +127,7 @@ class TestManifestSerializerSerialize:
 
         assert result["version"] == MANIFEST_VERSION
 
-    def test_serialize_includes_blender_filepath(
-        self, mock_bpy_module: MagicMock
-    ) -> None:
+    def test_serialize_includes_blender_filepath(self, mock_bpy_module: MagicMock) -> None:
         """serialize() includes bpy.data.filepath."""
         from blender_extension.exporters.manifest import ManifestSerializer
 
@@ -161,9 +155,7 @@ class TestManifestSerializerSerialize:
 
         assert result["blender_file"] == "unsaved"
 
-    def test_serialize_exported_at_is_iso_format(
-        self, mock_bpy_module: MagicMock
-    ) -> None:
+    def test_serialize_exported_at_is_iso_format(self, mock_bpy_module: MagicMock) -> None:
         """serialize() includes ISO format timestamp."""
         from blender_extension.exporters.manifest import ManifestSerializer
 
@@ -266,9 +258,7 @@ class TestSerializeInstances:
         assert "bounding_box" in result[0]
         assert result[0]["collection_path"] == ["/Scene", "Objects"]
 
-    def test_serialize_instance_with_asset_id(
-        self, mock_bpy_module: MagicMock
-    ) -> None:
+    def test_serialize_instance_with_asset_id(self, mock_bpy_module: MagicMock) -> None:
         """_serialize_instances() includes optional asset_id."""
         from blender_extension.exporters.manifest import ManifestSerializer
 
@@ -279,9 +269,7 @@ class TestSerializeInstances:
 
         assert result[0]["asset_id"] == "cube-mesh"
 
-    def test_serialize_instance_without_asset_id(
-        self, mock_bpy_module: MagicMock
-    ) -> None:
+    def test_serialize_instance_without_asset_id(self, mock_bpy_module: MagicMock) -> None:
         """_serialize_instances() omits asset_id when None."""
         from blender_extension.exporters.manifest import ManifestSerializer
 
@@ -292,9 +280,7 @@ class TestSerializeInstances:
 
         assert "asset_id" not in result[0]
 
-    def test_serialize_instance_with_custom_properties(
-        self, mock_bpy_module: MagicMock
-    ) -> None:
+    def test_serialize_instance_with_custom_properties(self, mock_bpy_module: MagicMock) -> None:
         """_serialize_instances() includes custom_properties when present."""
         from blender_extension.exporters.manifest import ManifestSerializer
 
@@ -306,9 +292,7 @@ class TestSerializeInstances:
 
         assert result[0]["custom_properties"] == props
 
-    def test_serialize_instance_without_custom_properties(
-        self, mock_bpy_module: MagicMock
-    ) -> None:
+    def test_serialize_instance_without_custom_properties(self, mock_bpy_module: MagicMock) -> None:
         """_serialize_instances() omits custom_properties when empty."""
         from blender_extension.exporters.manifest import ManifestSerializer
 
@@ -368,9 +352,7 @@ class TestSerializeIslands:
         assert result["island-1"]["instances"] == ["inst-1", "inst-2"]
         assert result["island-1"]["terrain_objects"] == ["terrain-1"]
 
-    def test_serialize_island_with_collision_mesh(
-        self, mock_bpy_module: MagicMock
-    ) -> None:
+    def test_serialize_island_with_collision_mesh(self, mock_bpy_module: MagicMock) -> None:
         """_serialize_islands() includes optional collision_mesh."""
         from blender_extension.exporters.manifest import ManifestSerializer
 
@@ -381,9 +363,7 @@ class TestSerializeIslands:
 
         assert result["island-1"]["collision_mesh"] == "collision/island-1.glb"
 
-    def test_serialize_island_without_collision_mesh(
-        self, mock_bpy_module: MagicMock
-    ) -> None:
+    def test_serialize_island_without_collision_mesh(self, mock_bpy_module: MagicMock) -> None:
         """_serialize_islands() omits collision_mesh when None."""
         from blender_extension.exporters.manifest import ManifestSerializer
 
@@ -394,9 +374,7 @@ class TestSerializeIslands:
 
         assert "collision_mesh" not in result["island-1"]
 
-    def test_serialize_island_with_terrain_chunks(
-        self, mock_bpy_module: MagicMock
-    ) -> None:
+    def test_serialize_island_with_terrain_chunks(self, mock_bpy_module: MagicMock) -> None:
         """_serialize_islands() includes terrain.chunks for individual mode."""
         from blender_extension.exporters.manifest import ManifestSerializer
 
@@ -418,9 +396,7 @@ class TestSerializeIslands:
         ]
         assert result["island-1"]["terrain"]["merged"] is None
 
-    def test_serialize_island_with_terrain_merged(
-        self, mock_bpy_module: MagicMock
-    ) -> None:
+    def test_serialize_island_with_terrain_merged(self, mock_bpy_module: MagicMock) -> None:
         """_serialize_islands() includes terrain.merged for merged mode."""
         from blender_extension.exporters.manifest import ManifestSerializer
 
@@ -436,9 +412,7 @@ class TestSerializeIslands:
         assert result["island-1"]["terrain"]["chunks"] == []
         assert result["island-1"]["terrain"]["merged"] == "islands/island-1/terrain/merged.glb"
 
-    def test_serialize_island_terrain_always_present(
-        self, mock_bpy_module: MagicMock
-    ) -> None:
+    def test_serialize_island_terrain_always_present(self, mock_bpy_module: MagicMock) -> None:
         """_serialize_islands() always includes terrain object."""
         from blender_extension.exporters.manifest import ManifestSerializer
 
@@ -576,9 +550,7 @@ class TestSerializeWorld:
 class TestWriteManifest:
     """Tests for write_manifest() function."""
 
-    def test_write_manifest_success(
-        self, mock_bpy_module: MagicMock, tmp_path: Any
-    ) -> None:
+    def test_write_manifest_success(self, mock_bpy_module: MagicMock, tmp_path: Any) -> None:
         """write_manifest() writes JSON file and returns True."""
         from blender_extension.exporters.manifest import write_manifest
 
@@ -627,9 +599,7 @@ class TestWriteManifest:
         assert len(parsed["instances"]) == 1
         assert "a1" in parsed["asset_definitions"]
 
-    def test_write_manifest_error_raises_runtime_error(
-        self, mock_bpy_module: MagicMock
-    ) -> None:
+    def test_write_manifest_error_raises_runtime_error(self, mock_bpy_module: MagicMock) -> None:
         """write_manifest() raises RuntimeError on failure."""
         from blender_extension.exporters.manifest import write_manifest
 

@@ -232,6 +232,9 @@ def create_mathutils_mock() -> MagicMock:
         def __rmul__(self, scalar: float) -> MockVector:
             return self.__mul__(scalar)
 
+        def __truediv__(self, scalar: float) -> MockVector:
+            return MockVector(tuple(c / scalar for c in self._coords))
+
         def __repr__(self) -> str:
             return f"Vector({tuple(self._coords)})"
 

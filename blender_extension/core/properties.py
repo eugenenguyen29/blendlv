@@ -83,6 +83,7 @@ class TrivestaSceneSettings(PropertyGroup):
         items=[
             ("merged", "Merged", "Single GLB per island (production)"),
             ("individual", "Individual", "Separate GLB per terrain chunk (dev)"),
+            ("dual", "Dual", "Both merged and individual (dev + production)"),
         ],
         default="merged",
     )

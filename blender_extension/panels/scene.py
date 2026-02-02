@@ -39,6 +39,10 @@ class TRIVESTA_PT_scene_panel(Panel):
         if settings.separate_assets:
             layout.prop(settings, "export_collision")
 
+        # Terrain export mode
+        layout.separator()
+        layout.prop(settings, "terrain_export_mode")
+
         # World settings section
         layout.separator()
         box = layout.box()

@@ -173,4 +173,29 @@ class TestTrivestaSceneSettingsTerrainExportMode:
 
         annotations = TrivestaSceneSettings.__annotations__
         terrain_mode_annotation = annotations["terrain_export_mode"]
-        assert "default='merged'" in terrain_mode_annotation or 'default="merged"' in terrain_mode_annotation
+        assert (
+            "default='merged'" in terrain_mode_annotation
+            or 'default="merged"' in terrain_mode_annotation
+        )
+
+    def test_scene_terrain_export_mode_has_dual_option(self, mock_bpy_module: MagicMock) -> None:
+        """terrain_export_mode should include 'dual' option for exporting both."""
+        from blender_extension.core.properties import TrivestaSceneSettings
+
+        annotations = TrivestaSceneSettings.__annotations__
+        terrain_mode_annotation = annotations["terrain_export_mode"]
+        # Check for the enum identifier as a tuple first element: ('dual',
+        assert "('dual'" in terrain_mode_annotation or '("dual"' in terrain_mode_annotation
+
+    def test_scene_terrain_export_mode_dual_has_correct_metadata(
+        self, mock_bpy_module: MagicMock
+    ) -> None:
+        """dual option should have correct label and description mentioning 'both'."""
+        from blender_extension.core.properties import TrivestaSceneSettings
+
+        annotations = TrivestaSceneSettings.__annotations__
+        terrain_mode_annotation = annotations["terrain_export_mode"]
+        # Check that "Dual" label is present
+        assert "Dual" in terrain_mode_annotation
+        # Check that description mentions "both" (merged and individual)
+        assert "both" in terrain_mode_annotation.lower() or "Both" in terrain_mode_annotation

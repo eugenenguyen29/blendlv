@@ -404,9 +404,7 @@ class TestCollectionExportPipeline(TrivestaTestCase):
 
             # Find collection instance in manifest
             collection_instances = [
-                inst
-                for inst in manifest["instances"]
-                if inst.get("name") == instance.name
+                inst for inst in manifest["instances"] if inst.get("name") == instance.name
             ]
             self.assertEqual(
                 len(collection_instances),
