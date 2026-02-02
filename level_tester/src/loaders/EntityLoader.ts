@@ -174,7 +174,7 @@ export class EntityLoader {
     console.log(`  - Total entities: ${entities.size}`);
     console.log(`  - NPCs: ${npcs.size}`);
     console.log(`  - Interactives: ${interactives.size}`);
-    for (const [_id, entity] of entities) {
+    for (const entity of entities.values()) {
       const pos = entity.object.position;
       const worldPos = new Vector3();
       entity.object.getWorldPosition(worldPos);

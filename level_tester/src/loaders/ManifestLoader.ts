@@ -173,4 +173,18 @@ export class ManifestLoader {
   getBasePath(): string {
     return this.basePath;
   }
+
+  /**
+   * Resolve path to terrain chunk file
+   */
+  resolveTerrainChunkPath(islandId: string, chunkName: string): string {
+    return `${this.basePath}/islands/${islandId}/terrain/${chunkName}.glb`;
+  }
+
+  /**
+   * Resolve path to merged terrain file
+   */
+  resolveTerrainMergedPath(islandId: string): string {
+    return `${this.basePath}/islands/${islandId}/terrain/merged.glb`;
+  }
 }

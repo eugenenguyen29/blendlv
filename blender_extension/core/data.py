@@ -123,6 +123,8 @@ class Island:
         instances: List of instance IDs belonging to this island.
         terrain_objects: List of terrain instance IDs.
         collision_mesh: Optional path to collision mesh file.
+        terrain_chunks: List of paths to individual terrain chunk GLBs.
+        terrain_merged: Optional path to merged terrain GLB.
     """
 
     id: str
@@ -133,6 +135,8 @@ class Island:
     instances: list[str] = field(default_factory=list)
     terrain_objects: list[str] = field(default_factory=list)
     collision_mesh: str | None = None
+    terrain_chunks: list[str] = field(default_factory=list)
+    terrain_merged: str | None = None
 
 
 @dataclass

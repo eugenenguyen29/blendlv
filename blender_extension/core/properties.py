@@ -77,6 +77,16 @@ class TrivestaSceneSettings(PropertyGroup):
         default=True,
     )
 
+    terrain_export_mode: EnumProperty(
+        name="Terrain Export Mode",
+        description="How to export terrain meshes",
+        items=[
+            ("merged", "Merged", "Single GLB per island (production)"),
+            ("individual", "Individual", "Separate GLB per terrain chunk (dev)"),
+        ],
+        default="merged",
+    )
+
     # World settings
     world_size_x: FloatProperty(
         name="World Size X",

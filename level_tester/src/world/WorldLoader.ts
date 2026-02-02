@@ -12,6 +12,8 @@ import {
 } from "three";
 import { GLTFLoader, type GLTF } from "three/addons/loaders/GLTFLoader.js";
 import { ManifestLoader } from "../loaders/ManifestLoader";
+import { TerrainLoader } from "../loaders/TerrainLoader";
+import { devOnly } from "../config";
 import type {
   Island,
   TerrainObject,
@@ -42,10 +44,12 @@ export interface WorldLoaderOptions {
 export class WorldLoader {
   private gltfLoader: GLTFLoader;
   private manifestLoader: ManifestLoader;
+  private terrainLoader: TerrainLoader;
 
   constructor(manifestLoader: ManifestLoader) {
     this.manifestLoader = manifestLoader;
     this.gltfLoader = new GLTFLoader();
+    this.terrainLoader = new TerrainLoader(manifestLoader.getBasePath());
   }
 
   /**
@@ -113,19 +117,19 @@ export class WorldLoader {
     // Apply world transform
     this.applyTransform(group, island.world_position, island.world_rotation);
 
-    // Load terrain GLB
-    const terrainPath = this.manifestLoader.resolveIslandPath(island.id);
+    // Load terrain using TerrainLoader
     try {
-      const gltf = await this.loadGLTF(terrainPath);
-      const terrainGroup = new Group();
-      terrainGroup.name = `${island.name}_terrain`;
+      const terrainResult = await this.terrainLoader.loadIslandTerrain(island);
+      terrainResult.root.name = `${island.name}_terrain`;
+      group.add(terrainResult.root);
 
-      // Add all loaded objects to terrain group
-      while (gltf.scene.children.length > 0) {
-        terrainGroup.add(gltf.scene.children[0]);
-      }
-
-      group.add(terrainGroup);
+      devOnly(() => {
+        console.log(
+          `[WorldLoader] Loaded terrain for ${island.id}: ` +
+            `mode=${terrainResult.mode}, meshes=${terrainResult.meshCount}, ` +
+            `vertices=${terrainResult.vertexCount}`
+        );
+      });
     } catch (error) {
       console.warn(`Failed to load terrain for island ${island.id}:`, error);
     }

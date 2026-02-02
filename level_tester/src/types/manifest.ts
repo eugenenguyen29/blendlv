@@ -68,6 +68,16 @@ export interface IslandBounds {
   radius: number;
 }
 
+/**
+ * Terrain file paths for an island
+ */
+export interface IslandTerrain {
+  /** Individual chunk file paths (dev/individual mode) */
+  chunks: string[];
+  /** Merged terrain file path (prod/merged mode) */
+  merged: string | null;
+}
+
 export interface Island {
   id: string;
   name: string;
@@ -76,6 +86,7 @@ export interface Island {
   bounds: IslandBounds;
   instances: string[];
   terrain_objects: string[];
+  terrain: IslandTerrain;
   collision_mesh?: string | null;
 }
 

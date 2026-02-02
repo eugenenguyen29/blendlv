@@ -164,6 +164,10 @@ class ManifestSerializer:
                 "bounds": island.bounds,
                 "instances": island.instances,
                 "terrain_objects": island.terrain_objects,
+                "terrain": {
+                    "chunks": island.terrain_chunks,
+                    "merged": island.terrain_merged,
+                },
             }
             if island.collision_mesh:
                 result[island_id]["collision_mesh"] = island.collision_mesh

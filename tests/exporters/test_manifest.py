@@ -60,6 +60,8 @@ def make_test_island(
     id: str = "island-1",
     name: str = "TestIsland",
     collision_mesh: str | None = None,
+    terrain_chunks: list[str] | None = None,
+    terrain_merged: str | None = None,
 ) -> Island:
     """Create a test Island."""
     return Island(
@@ -71,6 +73,8 @@ def make_test_island(
         instances=["inst-1", "inst-2"],
         terrain_objects=["terrain-1"],
         collision_mesh=collision_mesh,
+        terrain_chunks=terrain_chunks or [],
+        terrain_merged=terrain_merged,
     )
 
 
@@ -389,6 +393,64 @@ class TestSerializeIslands:
         result = serializer._serialize_islands({"island-1": island})
 
         assert "collision_mesh" not in result["island-1"]
+
+    def test_serialize_island_with_terrain_chunks(
+        self, mock_bpy_module: MagicMock
+    ) -> None:
+        """_serialize_islands() includes terrain.chunks for individual mode."""
+        from blender_extension.exporters.manifest import ManifestSerializer
+
+        serializer = ManifestSerializer()
+        island = make_test_island(
+            terrain_chunks=[
+                "islands/island-1/terrain/chunk_a.glb",
+                "islands/island-1/terrain/chunk_b.glb",
+            ],
+            terrain_merged=None,
+        )
+
+        result = serializer._serialize_islands({"island-1": island})
+
+        assert "terrain" in result["island-1"]
+        assert result["island-1"]["terrain"]["chunks"] == [
+            "islands/island-1/terrain/chunk_a.glb",
+            "islands/island-1/terrain/chunk_b.glb",
+        ]
+        assert result["island-1"]["terrain"]["merged"] is None
+
+    def test_serialize_island_with_terrain_merged(
+        self, mock_bpy_module: MagicMock
+    ) -> None:
+        """_serialize_islands() includes terrain.merged for merged mode."""
+        from blender_extension.exporters.manifest import ManifestSerializer
+
+        serializer = ManifestSerializer()
+        island = make_test_island(
+            terrain_chunks=[],
+            terrain_merged="islands/island-1/terrain/merged.glb",
+        )
+
+        result = serializer._serialize_islands({"island-1": island})
+
+        assert "terrain" in result["island-1"]
+        assert result["island-1"]["terrain"]["chunks"] == []
+        assert result["island-1"]["terrain"]["merged"] == "islands/island-1/terrain/merged.glb"
+
+    def test_serialize_island_terrain_always_present(
+        self, mock_bpy_module: MagicMock
+    ) -> None:
+        """_serialize_islands() always includes terrain object."""
+        from blender_extension.exporters.manifest import ManifestSerializer
+
+        serializer = ManifestSerializer()
+        island = make_test_island()
+
+        result = serializer._serialize_islands({"island-1": island})
+
+        # terrain key should always be present
+        assert "terrain" in result["island-1"]
+        assert "chunks" in result["island-1"]["terrain"]
+        assert "merged" in result["island-1"]["terrain"]
 
     def test_serialize_multiple_islands(self, mock_bpy_module: MagicMock) -> None:
         """_serialize_islands() handles multiple islands."""

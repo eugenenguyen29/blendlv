@@ -122,10 +122,20 @@ def export_world(
         for asset_def in asset_definitions.values():
             files_created.append(os.path.join(abs_export_path, asset_def.file))
 
-        # Export island terrain
-        island_files = export_islands(islands, abs_export_path, context)
-        for f in island_files:
-            files_created.append(os.path.join(abs_export_path, f))
+        # Export island terrain with mode from scene settings
+        export_mode = context.scene.trivesta.terrain_export_mode
+        terrain_results = export_islands(islands, abs_export_path, context, export_mode)
+
+        # Update island terrain references and collect created files
+        for island_id, (chunks, merged) in terrain_results.items():
+            if island_id in data.islands:
+                data.islands[island_id].terrain_chunks = chunks
+                data.islands[island_id].terrain_merged = merged
+            # Add created files to list
+            for chunk in chunks:
+                files_created.append(os.path.join(abs_export_path, chunk))
+            if merged:
+                files_created.append(os.path.join(abs_export_path, merged))
 
         # Export collision meshes
         collision_paths = export_collision(collision_objects, islands, abs_export_path, context)

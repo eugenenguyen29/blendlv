@@ -137,3 +137,40 @@ class TestDialogLineRegistration:
         assert dialog_line_idx < object_settings_idx, (
             "DialogLine must be registered before TrivestaObjectSettings"
         )
+
+
+class TestTrivestaSceneSettingsTerrainExportMode:
+    """Tests for terrain_export_mode property on TrivestaSceneSettings."""
+
+    def test_scene_terrain_export_mode_annotation(self, mock_bpy_module: MagicMock) -> None:
+        """Scene should have terrain_export_mode property annotated."""
+        from blender_extension.core.properties import TrivestaSceneSettings
+
+        annotations = getattr(TrivestaSceneSettings, "__annotations__", {})
+        assert "terrain_export_mode" in annotations
+
+    def test_scene_terrain_export_mode_is_enum(self, mock_bpy_module: MagicMock) -> None:
+        """terrain_export_mode should be an EnumProperty."""
+        from blender_extension.core.properties import TrivestaSceneSettings
+
+        annotations = TrivestaSceneSettings.__annotations__
+        terrain_mode_annotation = annotations["terrain_export_mode"]
+        assert "EnumProperty" in terrain_mode_annotation
+
+    def test_scene_terrain_export_mode_has_items(self, mock_bpy_module: MagicMock) -> None:
+        """terrain_export_mode should have merged and individual items."""
+        from blender_extension.core.properties import TrivestaSceneSettings
+
+        annotations = TrivestaSceneSettings.__annotations__
+        terrain_mode_annotation = annotations["terrain_export_mode"]
+        # Check for items tuple entries
+        assert "merged" in terrain_mode_annotation
+        assert "individual" in terrain_mode_annotation
+
+    def test_scene_terrain_export_mode_default_merged(self, mock_bpy_module: MagicMock) -> None:
+        """terrain_export_mode should default to merged."""
+        from blender_extension.core.properties import TrivestaSceneSettings
+
+        annotations = TrivestaSceneSettings.__annotations__
+        terrain_mode_annotation = annotations["terrain_export_mode"]
+        assert "default='merged'" in terrain_mode_annotation or 'default="merged"' in terrain_mode_annotation

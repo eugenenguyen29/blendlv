@@ -1,7 +1,9 @@
 """Island terrain export module.
 
-This module handles exporting island terrain meshes to separate GLB files.
-Each island gets its own terrain GLB file in the islands/ subdirectory.
+This module handles exporting island terrain meshes to GLB files.
+Supports dual export modes:
+- Merged: Single GLB per island containing all terrain (production)
+- Individual: Separate GLB per terrain chunk (development/debugging)
 """
 
 from __future__ import annotations
@@ -14,6 +16,7 @@ import bpy
 from blender_extension.core.data import Island
 from blender_extension.exporters.glb import export_objects_to_glb
 from blender_extension.utils.files import get_export_subdir
+from blender_extension.utils.naming import sanitize_name
 
 if TYPE_CHECKING:
     pass
@@ -57,72 +60,130 @@ def get_terrain_objects_for_island(
     return terrain_objects
 
 
+def _export_individual_chunks(
+    terrain_objects: list[bpy.types.Object],
+    island: Island,
+    terrain_dir: str,
+    context: bpy.types.Context,
+) -> tuple[list[str], None]:
+    """Export each terrain object as separate GLB.
+
+    Args:
+        terrain_objects: List of terrain mesh objects to export.
+        island: Island these objects belong to.
+        terrain_dir: Directory to write GLB files.
+        context: Blender context.
+
+    Returns:
+        Tuple of (chunk_paths, None) where chunk_paths are relative paths.
+    """
+    chunks: list[str] = []
+    for obj in terrain_objects:
+        chunk_name = sanitize_name(obj.name)
+        filepath = os.path.join(terrain_dir, f"{chunk_name}.glb")
+        if export_objects_to_glb([obj], filepath, context):
+            chunks.append(f"islands/{island.id}/terrain/{chunk_name}.glb")
+    return chunks, None
+
+
+def _export_merged_terrain(
+    terrain_objects: list[bpy.types.Object],
+    island: Island,
+    terrain_dir: str,
+    context: bpy.types.Context,
+) -> tuple[list[str], str | None]:
+    """Export all terrain objects as single merged GLB.
+
+    Args:
+        terrain_objects: List of terrain mesh objects to export.
+        island: Island these objects belong to.
+        terrain_dir: Directory to write GLB file.
+        context: Blender context.
+
+    Returns:
+        Tuple of ([], merged_path) where merged_path is relative path or None.
+    """
+    filepath = os.path.join(terrain_dir, "merged.glb")
+    if export_objects_to_glb(terrain_objects, filepath, context):
+        return [], f"islands/{island.id}/terrain/merged.glb"
+    return [], None
+
+
 def export_island_terrain(
     island: Island,
-    islands_dir: str,
+    export_path: str,
     context: bpy.types.Context,
-) -> str | None:
+    export_mode: str = "merged",
+) -> tuple[list[str], str | None]:
     """Export terrain for a single island.
 
     Args:
         island: Island to export terrain for.
-        islands_dir: Directory to write GLB file.
+        export_path: Base export directory.
         context: Blender context.
+        export_mode: "merged" (default) or "individual"
 
     Returns:
-        Relative path to exported file, or None if no terrain exported.
+        Tuple of (chunk_paths, merged_path) where:
+        - Individual mode: ([chunk1.glb, chunk2.glb, ...], None)
+        - Merged mode: ([], "islands/{id}/terrain/merged.glb")
+        - No terrain: ([], None)
     """
     terrain_objects = get_terrain_objects_for_island(island, context.scene)
 
     if not terrain_objects:
-        return None
+        return [], None
 
-    filename = f"{island.id}.glb"
-    filepath = os.path.join(islands_dir, filename)
+    terrain_dir = get_export_subdir(export_path, f"islands/{island.id}/terrain")
 
-    success = export_objects_to_glb(terrain_objects, filepath, context)
-
-    if success:
-        return f"islands/{filename}"
-    return None
+    if export_mode == "individual":
+        return _export_individual_chunks(terrain_objects, island, terrain_dir, context)
+    else:
+        return _export_merged_terrain(terrain_objects, island, terrain_dir, context)
 
 
 def export_islands(
     islands: dict[str, Island],
     export_path: str,
     context: bpy.types.Context,
-) -> list[str]:
+    export_mode: str = "merged",
+) -> dict[str, tuple[list[str], str | None]]:
     """Export terrain for all islands.
 
     Creates GLB files for each island's terrain in the islands/
-    subdirectory.
+    subdirectory structure.
 
     Args:
         islands: Dict of island_id to Island objects.
         export_path: Base export directory path.
         context: Blender context.
+        export_mode: "merged" (default) or "individual"
 
     Returns:
-        List of created file paths (relative to export_path).
+        Dict mapping island_id to (chunks, merged) tuples.
 
-    Directory Structure:
+    Directory Structure (individual mode):
         {export_path}/
         └── islands/
-            ├── island_01.glb
-            ├── island_02.glb
-            └── ...
+            └── {island_id}/
+                └── terrain/
+                    ├── chunk_a.glb
+                    └── chunk_b.glb
+
+    Directory Structure (merged mode):
+        {export_path}/
+        └── islands/
+            └── {island_id}/
+                └── terrain/
+                    └── merged.glb
     """
     if not islands:
-        return []
+        return {}
 
-    # Create islands subdirectory
-    islands_dir = get_export_subdir(export_path, "islands")
+    results: dict[str, tuple[list[str], str | None]] = {}
 
-    files_created: list[str] = []
+    for island_id, island in islands.items():
+        chunks, merged = export_island_terrain(island, export_path, context, export_mode)
+        results[island_id] = (chunks, merged)
 
-    for island in islands.values():
-        path = export_island_terrain(island, islands_dir, context)
-        if path:
-            files_created.append(path)
-
-    return files_created
+    return results

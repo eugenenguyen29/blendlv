@@ -39,6 +39,20 @@ export default defineConfig({
   build: {
     outDir: "dist",
     sourcemap: true,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // Separate Three.js core
+          three: ["three"],
+          // Separate Three.js addons
+          "three-addons": [
+            "three/addons/loaders/GLTFLoader.js",
+            "three/addons/controls/OrbitControls.js",
+            "three/addons/utils/BufferGeometryUtils.js",
+          ],
+        },
+      },
+    },
   },
   resolve: {
     alias: {

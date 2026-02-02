@@ -44,11 +44,32 @@ Zero tolerance. Fix pre-existing issues. No exceptions.
 
 Never separate implementation changes from their corresponding test changes.
 
-## Context7 (REQUIRED for bpy code)
+## Subagent Rules
 
-Query before writing/modifying any `bpy` code:
+**Use the correct subagent type - skills are auto-loaded via `skills` field in agent config:**
+
+| Task Domain | Subagent Type | Auto-loaded Skills |
+|-------------|---------------|-------------------|
+| Three.js / React / R3F | `react-specialist` | `react`, `threejs-react` |
+| Blender tests | `python-pro` | `blender-testing` |
+
+**Note:** Skills defined in `~/.claude/agents/<agent>.md` frontmatter are automatically injected into subagent context. No need to include "Read skill file first" in prompts.
+
+**MCP tools (Context7) require foreground mode** - background subagents cannot use MCP.
+
+## Context7 (REQUIRED)
+
+**Query before writing/modifying code in these domains:**
+
+| Domain | Library IDs |
+|--------|-------------|
+| Blender (`bpy`) | `/websites/blender_api_current` |
+| React Three Fiber | `/pmndrs/react-three-fiber` |
+| Drei helpers | `/pmndrs/drei` |
+| Three.js core | `/mrdoob/three.js` |
+
 ```
-mcp__context7__query-docs(libraryId="/websites/blender_api_current", query="...")
+mcp__context7__query-docs(libraryId="...", query="...")
 ```
 
 ## Development
@@ -62,7 +83,7 @@ ty check         # types (nix flake)
 
 ## Testing
 
-**READ `.claude/skills/blender-testing.md` before writing tests.**
+**READ `.claude/skills/blender-testing/SKILL.md` before writing tests.**
 
 **Rules:**
 1. Never `import bpy` in test files (conftest.py pre-mocks it)

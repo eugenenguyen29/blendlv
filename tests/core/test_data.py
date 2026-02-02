@@ -529,3 +529,66 @@ class TestExportData:
         assert data.by_entity_type["vegetation"][0] is tree_inst
         assert data.collection_tree is not None
         assert len(data.collection_tree.children) == 2
+
+
+# --- Island Terrain Fields Tests ---
+
+
+class TestIslandTerrainFields:
+    """Tests for Island terrain_chunks and terrain_merged fields."""
+
+    def test_island_terrain_fields_defaults(self) -> None:
+        """Island should have terrain_chunks and terrain_merged fields with defaults."""
+        bounds: BoundingBox = {
+            "min": [0.0, 0.0, 0.0],
+            "max": [1.0, 1.0, 1.0],
+            "radius": 1.0,
+        }
+        island = Island(
+            id="test",
+            name="Test",
+            world_position=(0.0, 0.0, 0.0),
+            world_rotation=(0.0, 0.0, 0.0, 1.0),
+            bounds=bounds,
+        )
+        assert island.terrain_chunks == []
+        assert island.terrain_merged is None
+
+    def test_island_terrain_chunks_populated(self) -> None:
+        """Island terrain_chunks should accept list of paths."""
+        bounds: BoundingBox = {
+            "min": [0.0, 0.0, 0.0],
+            "max": [1.0, 1.0, 1.0],
+            "radius": 1.0,
+        }
+        island = Island(
+            id="test",
+            name="Test",
+            world_position=(0.0, 0.0, 0.0),
+            world_rotation=(0.0, 0.0, 0.0, 1.0),
+            bounds=bounds,
+            terrain_chunks=["islands/test/terrain/chunk_a.glb", "islands/test/terrain/chunk_b.glb"],
+            terrain_merged=None,
+        )
+        assert island.terrain_chunks == [
+            "islands/test/terrain/chunk_a.glb",
+            "islands/test/terrain/chunk_b.glb",
+        ]
+
+    def test_island_terrain_merged_populated(self) -> None:
+        """Island terrain_merged should accept path string."""
+        bounds: BoundingBox = {
+            "min": [0.0, 0.0, 0.0],
+            "max": [1.0, 1.0, 1.0],
+            "radius": 1.0,
+        }
+        island = Island(
+            id="test",
+            name="Test",
+            world_position=(0.0, 0.0, 0.0),
+            world_rotation=(0.0, 0.0, 0.0, 1.0),
+            bounds=bounds,
+            terrain_chunks=[],
+            terrain_merged="islands/test/terrain/merged.glb",
+        )
+        assert island.terrain_merged == "islands/test/terrain/merged.glb"
