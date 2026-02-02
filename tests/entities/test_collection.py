@@ -341,3 +341,130 @@ class TestCollectionExtractorEntityType:
         instance = extractor.extract(mock_collection_instance)
 
         assert instance.entity_type == "static"
+
+
+class TestCollectionExtractorDialogSerialization:
+    """Tests for NPC dialog and Interactive script_id serialization."""
+
+    def test_extract_npc_with_dialog_lines(
+        self,
+        mock_bpy_module: MagicMock,
+        mock_collection_instance: MagicMock,
+        mock_transforms: dict,
+    ) -> None:
+        """Should serialize dialog_lines into custom_properties['dialog'] for NPC entities."""
+        from blender_extension.entities.collection import CollectionExtractor
+
+        # Setup NPC entity with dialog lines
+        mock_settings = MagicMock()
+        mock_settings.entity_type = "npc"
+
+        # Create mock dialog lines as list
+        mock_line1 = MagicMock()
+        mock_line1.speaker = "Guard"
+        mock_line1.text = "Halt! Who goes there?"
+        mock_line2 = MagicMock()
+        mock_line2.speaker = "Guard"
+        mock_line2.text = "Show me your papers."
+
+        mock_settings.dialog_lines = [mock_line1, mock_line2]
+
+        mock_collection_instance.trivesta = mock_settings
+
+        extractor = CollectionExtractor()
+        instance = extractor.extract(mock_collection_instance)
+
+        # Verify dialog was serialized
+        assert "dialog" in instance.custom_properties
+        dialog_data = instance.custom_properties["dialog"]
+        assert len(dialog_data) == 2
+        assert dialog_data[0] == {"speaker": "Guard", "text": "Halt! Who goes there?"}
+        assert dialog_data[1] == {"speaker": "Guard", "text": "Show me your papers."}
+
+    def test_extract_npc_without_dialog_lines(
+        self,
+        mock_bpy_module: MagicMock,
+        mock_collection_instance: MagicMock,
+        mock_transforms: dict,
+    ) -> None:
+        """Should not add dialog key when dialog_lines is empty."""
+        from blender_extension.entities.collection import CollectionExtractor
+
+        mock_settings = MagicMock()
+        mock_settings.entity_type = "npc"
+        mock_settings.dialog_lines = []
+
+        mock_collection_instance.trivesta = mock_settings
+
+        extractor = CollectionExtractor()
+        instance = extractor.extract(mock_collection_instance)
+
+        assert "dialog" not in instance.custom_properties
+
+    def test_extract_interactive_with_script_id(
+        self,
+        mock_bpy_module: MagicMock,
+        mock_collection_instance: MagicMock,
+        mock_transforms: dict,
+    ) -> None:
+        """Should serialize script_id for Interactive entities."""
+        from blender_extension.entities.collection import CollectionExtractor
+
+        mock_settings = MagicMock()
+        mock_settings.entity_type = "interactive"
+        mock_settings.script_id = "door_interaction"
+
+        mock_collection_instance.trivesta = mock_settings
+
+        extractor = CollectionExtractor()
+        instance = extractor.extract(mock_collection_instance)
+
+        assert "script_id" in instance.custom_properties
+        assert instance.custom_properties["script_id"] == "door_interaction"
+
+    def test_extract_interactive_without_script_id(
+        self,
+        mock_bpy_module: MagicMock,
+        mock_collection_instance: MagicMock,
+        mock_transforms: dict,
+    ) -> None:
+        """Should not add script_id key when script_id is empty."""
+        from blender_extension.entities.collection import CollectionExtractor
+
+        mock_settings = MagicMock()
+        mock_settings.entity_type = "interactive"
+        mock_settings.script_id = ""
+
+        mock_collection_instance.trivesta = mock_settings
+
+        extractor = CollectionExtractor()
+        instance = extractor.extract(mock_collection_instance)
+
+        assert "script_id" not in instance.custom_properties
+
+    def test_extract_static_no_dialog_serialization(
+        self,
+        mock_bpy_module: MagicMock,
+        mock_collection_instance: MagicMock,
+        mock_transforms: dict,
+    ) -> None:
+        """Should not serialize dialog or script_id for static entities."""
+        from blender_extension.entities.collection import CollectionExtractor
+
+        mock_settings = MagicMock()
+        mock_settings.entity_type = "static"
+
+        # Even if these exist, they shouldn't be serialized for static
+        mock_line = MagicMock()
+        mock_line.speaker = "Someone"
+        mock_line.text = "Should not appear"
+        mock_settings.dialog_lines = [mock_line]
+        mock_settings.script_id = "should_not_serialize"
+
+        mock_collection_instance.trivesta = mock_settings
+
+        extractor = CollectionExtractor()
+        instance = extractor.extract(mock_collection_instance)
+
+        assert "dialog" not in instance.custom_properties
+        assert "script_id" not in instance.custom_properties

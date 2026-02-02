@@ -6,6 +6,7 @@ for configuring per-object entity type and flags.
 
 from __future__ import annotations
 
+import bpy
 from bpy.types import Panel
 
 from ..utils.naming import generate_asset_key
@@ -15,8 +16,11 @@ from ..utils.transforms import get_library_source
 class TRIVESTA_PT_object_panel(Panel):
     """Object entity type and properties panel.
 
-    Displays in Properties > Object for mesh objects only. Allows
-    configuration of entity type, terrain/collision flags, and shows
+    Displays in Properties > Object for:
+    - Mesh objects
+    - Collection instances (EMPTY with instance_type='COLLECTION')
+
+    Allows configuration of entity type, terrain/collision flags, and shows
     read-only asset information for linked objects.
     """
 
@@ -27,9 +31,20 @@ class TRIVESTA_PT_object_panel(Panel):
     bl_context = "object"
 
     @classmethod
-    def poll(cls, context):
-        """Only show panel for mesh objects."""
-        return context.object is not None and context.object.type == "MESH"
+    def poll(cls, context: bpy.types.Context) -> bool:
+        """Show panel for mesh objects and collection instances."""
+        if context.object is None:
+            return False
+
+        # Support MESH objects
+        if context.object.type == "MESH":
+            return True
+
+        # Support EMPTY objects that instance collections
+        if context.object.type == "EMPTY" and context.object.instance_type == "COLLECTION":
+            return True
+
+        return False
 
     def draw(self, context):
         """Draw the object properties panel."""

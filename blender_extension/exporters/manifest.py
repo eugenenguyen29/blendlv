@@ -183,7 +183,6 @@ class ManifestSerializer:
         """
         settings = context.scene.trivesta
         return {
-            "file": "world.glb",
             "size": [settings.world_size_x, settings.world_size_z],
             "water_level": settings.water_level,
         }

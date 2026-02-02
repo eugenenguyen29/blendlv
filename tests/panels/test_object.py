@@ -9,6 +9,62 @@ from __future__ import annotations
 from unittest.mock import MagicMock, patch
 
 
+class TestObjectPanelPoll:
+    """Tests for TRIVESTA_PT_object_panel.poll()."""
+
+    def test_poll_allows_mesh_object(self, mock_bpy_module: MagicMock) -> None:
+        """Should show panel for MESH objects (existing behavior)."""
+        from blender_extension.panels.object import TRIVESTA_PT_object_panel
+
+        mock_ctx = MagicMock()
+        mock_ctx.object = MagicMock()
+        mock_ctx.object.type = "MESH"
+
+        assert TRIVESTA_PT_object_panel.poll(mock_ctx) is True
+
+    def test_poll_allows_collection_instance(self, mock_bpy_module: MagicMock) -> None:
+        """Should show panel for collection instances (new behavior)."""
+        from blender_extension.panels.object import TRIVESTA_PT_object_panel
+
+        mock_ctx = MagicMock()
+        mock_ctx.object = MagicMock()
+        mock_ctx.object.type = "EMPTY"
+        mock_ctx.object.instance_type = "COLLECTION"
+
+        assert TRIVESTA_PT_object_panel.poll(mock_ctx) is True
+
+    def test_poll_rejects_empty_without_collection(self, mock_bpy_module: MagicMock) -> None:
+        """Should reject plain EMPTY objects."""
+        from blender_extension.panels.object import TRIVESTA_PT_object_panel
+
+        mock_ctx = MagicMock()
+        mock_ctx.object = MagicMock()
+        mock_ctx.object.type = "EMPTY"
+        mock_ctx.object.instance_type = "NONE"
+
+        assert TRIVESTA_PT_object_panel.poll(mock_ctx) is False
+
+    def test_poll_rejects_other_object_types(self, mock_bpy_module: MagicMock) -> None:
+        """Should reject CAMERA, LIGHT, and other non-supported types."""
+        from blender_extension.panels.object import TRIVESTA_PT_object_panel
+
+        for obj_type in ["CAMERA", "LIGHT", "CURVE", "ARMATURE"]:
+            mock_ctx = MagicMock()
+            mock_ctx.object = MagicMock()
+            mock_ctx.object.type = obj_type
+
+            assert TRIVESTA_PT_object_panel.poll(mock_ctx) is False
+
+    def test_poll_rejects_none_object(self, mock_bpy_module: MagicMock) -> None:
+        """Should reject when no object is selected."""
+        from blender_extension.panels.object import TRIVESTA_PT_object_panel
+
+        mock_ctx = MagicMock()
+        mock_ctx.object = None
+
+        assert TRIVESTA_PT_object_panel.poll(mock_ctx) is False
+
+
 class TestDialogUIList:
     """Tests for TRIVESTA_UL_dialog_list UIList."""
 

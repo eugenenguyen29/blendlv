@@ -39,6 +39,14 @@ class CollectionExtractor(EntityExtractor):
         If the object has trivesta.entity_type set, that value is used.
         Otherwise defaults to 'static'.
 
+    NPC Dialog Serialization:
+        For NPC entities (entity_type='npc'), serializes dialog_lines into
+        custom_properties["dialog"].
+
+    Interactive Serialization:
+        For Interactive entities (entity_type='interactive'), serializes
+        script_id into custom_properties["script_id"].
+
     Asset Key Generation:
         - Linked collection: {library_name}_{collection_name}
         - Local collection: {collection_name}
@@ -92,6 +100,29 @@ class CollectionExtractor(EntityExtractor):
         # Calculate bounding box from collection contents
         bounding_box = self._calculate_collection_bounding_box(obj)
 
+        # Get base custom properties
+        custom_properties = get_custom_properties(obj)
+
+        # Serialize dialog/script_id for NPC and Interactive entities
+        if hasattr(obj, "trivesta"):
+            settings = obj.trivesta
+
+            # Serialize dialog lines for NPC entities
+            if settings.entity_type == "npc" and len(settings.dialog_lines) > 0:
+                dialog_data = []
+                for line in settings.dialog_lines:
+                    dialog_data.append(
+                        {
+                            "speaker": line.speaker,
+                            "text": line.text,
+                        }
+                    )
+                custom_properties["dialog"] = dialog_data
+
+            # Serialize script_id for Interactive entities
+            if settings.entity_type == "interactive" and settings.script_id:
+                custom_properties["script_id"] = settings.script_id
+
         return Instance(
             id=self._generate_instance_id(obj),
             name=obj.name,
@@ -102,7 +133,7 @@ class CollectionExtractor(EntityExtractor):
             scale=tuple(transform["scale"]),
             bounding_box=bounding_box,
             collection_path=self._get_collection_path(obj),
-            custom_properties=get_custom_properties(obj),
+            custom_properties=custom_properties,
         )
 
     def _generate_asset_key(self, obj: bpy.types.Object) -> str | None:
