@@ -2,6 +2,46 @@
 
 Three.js level design pipeline with Blender export tools.
 
+## MANDATORY: Code Quality Gate (Agents & Subagents)
+
+**ALL agents and subagents MUST ensure the following pass before completing ANY task:**
+
+```bash
+ruff check .                           # Linting - MUST be clean
+ty check                               # Type checking - MUST be clean
+uv run pytest                          # Unit tests - ALL must pass
+uv run python tests/e2e/find_blender.py  # E2E tests - ALL must pass
+```
+
+### Rules
+
+1. **Zero tolerance for errors** - No linting errors, type errors, or failing tests
+2. **Fix pre-existing issues** - If you encounter errors that existed before your changes, YOU MUST FIX THEM before completing the task
+3. **No exceptions** - Do not mark a task complete, sign off, or report success if any check fails
+4. **Run all checks** - Always run the full verification suite, not just checks on modified files
+
+### Verification Workflow
+
+Before completing any task:
+```bash
+# 1. Linting (fix any issues)
+ruff check . --fix
+ruff check .
+
+# 2. Type checking (fix any issues)
+ty check
+
+# 3. Unit tests (fix any failures)
+uv run pytest -x -v
+
+# 4. E2E tests (fix any failures)
+uv run python tests/e2e/find_blender.py
+```
+
+**If ANY check fails, the task is NOT complete. Fix all issues first.**
+
+---
+
 ## Architecture Docs
 
 Reference `.claude/architecture/` for component context:
