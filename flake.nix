@@ -26,9 +26,14 @@
             ruff
             ty
 
-            # Node.js for viewer (when needed)
+            # Node.js for level_tester
             nodejs_24
             nodePackages.pnpm
+
+            # TypeScript/JS LSP and linting daemons
+            vtsls
+            eslint_d
+            prettierd
           ];
 
           # BLENDER_EXE: Environment variable for E2E tests
