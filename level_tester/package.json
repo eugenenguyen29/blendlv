@@ -7,7 +7,10 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "lint": "eslint src",
-    "format": "prettier --write \"src/**/*.{ts,tsx,json}\""
+    "format": "prettier --write \"src/**/*.{ts,tsx,json}\"",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
     "three": "^0.182.0"
@@ -15,10 +18,12 @@
   "devDependencies": {
     "@eslint/js": "^9.20.0",
     "@types/three": "^0.182.0",
+    "@vitest/coverage-v8": "^4.0.18",
     "eslint": "^9.20.0",
     "prettier": "^3.8.1",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.53.0",
-    "vite": "^7.3.1"
+    "vite": "^7.3.1",
+    "vitest": "^4.0.18"
   }
 }

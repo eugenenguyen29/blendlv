@@ -1,0 +1,121 @@
+{
+  "_generated": "AUTO-GENERATED FILE - DO NOT EDIT MANUALLY. Re-export from Blender instead.",
+  "version": "2.0",
+  "exported_at": "2026-02-02T03:11:29.360502+00:00",
+  "blender_file": "unsaved",
+  "asset_definitions": {
+    "rouge_rouge": {
+      "id": "rouge_rouge",
+      "file": "assets/rouge_rouge.glb"
+    }
+  },
+  "instances": [
+    {
+      "id": "rouge_4cd940",
+      "name": "Rouge",
+      "entity_type": "npc",
+      "position": [
+        6.878938674926758,
+        2.0807085037231445,
+        4.681347846984863
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        -0.0,
+        1.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounding_box": {
+        "min": [
+          -0.9723464250564575,
+          -0.0020256892312318087,
+          -0.5414556860923767
+        ],
+        "max": [
+          0.9723498225212097,
+          2.1709671020507812,
+          0.5577426552772522
+        ],
+        "radius": 1.5582023424427263
+      },
+      "collection_path": [
+        "Scene Collection",
+        "Collection"
+      ],
+      "asset_id": "rouge_rouge"
+    },
+    {
+      "id": "rouge_001_4ce040",
+      "name": "Rouge.001",
+      "entity_type": "npc",
+      "position": [
+        0.2689361572265625,
+        2.0807085037231445,
+        -1.7784194946289062
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        -0.0,
+        1.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounding_box": {
+        "min": [
+          -0.9723464250564575,
+          -0.0020256892312318087,
+          -0.5414556860923767
+        ],
+        "max": [
+          0.9723498225212097,
+          2.1709671020507812,
+          0.5577426552772522
+        ],
+        "radius": 1.5582023424427263
+      },
+      "collection_path": [
+        "Scene Collection",
+        "Collection"
+      ],
+      "asset_id": "rouge_rouge"
+    }
+  ],
+  "terrain_objects": [],
+  "collections": {
+    "name": "Scene Collection",
+    "children": {
+      "Collection": {
+        "name": "Collection",
+        "children": {},
+        "instances": [
+          "square_water_detail_empty",
+          "square_water_detail_empty.001"
+        ]
+      }
+    },
+    "instances": []
+  },
+  "islands": {},
+  "world": {
+    "size": [
+      1024.0,
+      1024.0
+    ],
+    "water_level": 0.0
+  },
+  "statistics": {
+    "total_instances": 2,
+    "total_terrain": 0,
+    "total_assets": 1,
+    "total_islands": 0
+  }
+}
