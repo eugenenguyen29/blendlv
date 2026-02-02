@@ -25,6 +25,13 @@ ignore = ["E501"]
 # bl_info must come before imports in Blender extensions
 "blender_extension/__init__.py" = ["E402"]
 
+[tool.pytest.ini_options]
+# Unit tests only - E2E tests require Blender runtime
+testpaths = ["tests"]
+# Exclude E2E tests (run via: uv run python tests/e2e/find_blender.py)
+# Exclude dependencies (addon_testing is a reference, not our tests)
+addopts = "--ignore=tests/e2e --ignore=dependencies"
+
 [tool.mypy]
 python_version = "3.14"
 warn_return_any = true
