@@ -1,9 +1,14 @@
 {
   "_generated": "AUTO-GENERATED FILE - DO NOT EDIT MANUALLY. Re-export from Blender instead.",
   "version": "2.0",
-  "exported_at": "2026-02-02T03:11:29.360502+00:00",
+  "exported_at": "2026-02-02T04:56:20.212118+00:00",
   "blender_file": "unsaved",
   "asset_definitions": {
+    "base_road_cube": {
+      "id": "base_road_cube",
+      "file": "assets/base_road_cube.glb",
+      "source": "/home/saber/Downloads/Kaykit/base-road.blend"
+    },
     "rouge_rouge": {
       "id": "rouge_rouge",
       "file": "assets/rouge_rouge.glb"
@@ -11,13 +16,52 @@
   },
   "instances": [
     {
-      "id": "rouge_4cd940",
+      "id": "square_water_detail_empty_6ccfc0",
+      "name": "square_water_detail_empty",
+      "entity_type": "static",
+      "position": [
+        -2.1432886123657227,
+        0.0,
+        -0.21846294403076172
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        -0.0,
+        1.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounding_box": {
+        "min": [
+          -3.1432886123657227,
+          0.0,
+          -3.1997439861297607
+        ],
+        "max": [
+          0.881436824798584,
+          2.080709457397461,
+          0.7815370559692383
+        ],
+        "radius": 3.0157240186577727
+      },
+      "collection_path": [
+        "Scene Collection",
+        "Collection"
+      ],
+      "asset_id": "base_road_cube"
+    },
+    {
+      "id": "rouge_6cd540",
       "name": "Rouge",
       "entity_type": "npc",
       "position": [
-        6.878938674926758,
-        2.0807085037231445,
-        4.681347846984863
+        -2.410599708557129,
+        2.080709934234619,
+        -2.384032726287842
       ],
       "rotation": [
         0.0,
@@ -50,13 +94,255 @@
       "asset_id": "rouge_rouge"
     },
     {
-      "id": "rouge_001_4ce040",
+      "id": "rouge_001_6cd4c0",
       "name": "Rouge.001",
       "entity_type": "npc",
       "position": [
-        0.2689361572265625,
-        2.0807085037231445,
-        -1.7784194946289062
+        -0.03476524353027344,
+        0.9999995231628418,
+        -2.6330313682556152
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        -0.0,
+        1.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounding_box": {
+        "min": [
+          -0.9723464250564575,
+          -0.0020256892312318087,
+          -0.5414556860923767
+        ],
+        "max": [
+          0.9723498225212097,
+          2.1709671020507812,
+          0.5577426552772522
+        ],
+        "radius": 1.5582023424427263
+      },
+      "collection_path": [
+        "Scene Collection",
+        "Collection"
+      ],
+      "asset_id": "rouge_rouge",
+      "custom_properties": {
+        "dialog": [
+          {
+            "speaker": "Rouge 1",
+            "text": "Hello there"
+          }
+        ]
+      }
+    },
+    {
+      "id": "square_water_detail_empty_001_6cdcc0",
+      "name": "square_water_detail_empty.001",
+      "entity_type": "static",
+      "position": [
+        3.48153018951416,
+        0.0,
+        4.563470840454102
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        -0.0,
+        1.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounding_box": {
+        "min": [
+          2.48153018951416,
+          0.0,
+          1.5821897983551025
+        ],
+        "max": [
+          6.506255626678467,
+          2.080709457397461,
+          5.563470840454102
+        ],
+        "radius": 3.0157240186577727
+      },
+      "collection_path": [
+        "Scene Collection",
+        "Collection"
+      ],
+      "asset_id": "base_road_cube"
+    },
+    {
+      "id": "rouge_002_6ce040",
+      "name": "Rouge.002",
+      "entity_type": "npc",
+      "position": [
+        3.35506534576416,
+        2.080709457397461,
+        2.5036377906799316
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        -0.0,
+        1.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounding_box": {
+        "min": [
+          -0.9723464250564575,
+          -0.0020256892312318087,
+          -0.5414556860923767
+        ],
+        "max": [
+          0.9723498225212097,
+          2.1709671020507812,
+          0.5577426552772522
+        ],
+        "radius": 1.5582023424427263
+      },
+      "collection_path": [
+        "Scene Collection",
+        "Collection"
+      ],
+      "asset_id": "rouge_rouge"
+    },
+    {
+      "id": "rouge_003_509fc0",
+      "name": "Rouge.003",
+      "entity_type": "npc",
+      "position": [
+        3.501087188720703,
+        0.5,
+        4.695935249328613
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        -0.0,
+        1.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounding_box": {
+        "min": [
+          -0.9723464250564575,
+          -0.0020256892312318087,
+          -0.5414556860923767
+        ],
+        "max": [
+          0.9723498225212097,
+          2.1709671020507812,
+          0.5577426552772522
+        ],
+        "radius": 1.5582023424427263
+      },
+      "collection_path": [
+        "Scene Collection",
+        "Collection"
+      ],
+      "asset_id": "rouge_rouge"
+    },
+    {
+      "id": "rouge_004_b3cac0",
+      "name": "Rouge.004",
+      "entity_type": "npc",
+      "position": [
+        5.708227634429932,
+        0.9879903793334961,
+        2.7712717056274414
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        -0.0,
+        1.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounding_box": {
+        "min": [
+          -0.9723464250564575,
+          -0.0020256892312318087,
+          -0.5414556860923767
+        ],
+        "max": [
+          0.9723498225212097,
+          2.1709671020507812,
+          0.5577426552772522
+        ],
+        "radius": 1.5582023424427263
+      },
+      "collection_path": [
+        "Scene Collection",
+        "Collection"
+      ],
+      "asset_id": "rouge_rouge"
+    },
+    {
+      "id": "square_water_detail_empty_002_b3c7c0",
+      "name": "square_water_detail_empty.002",
+      "entity_type": "static",
+      "position": [
+        -4.63323974609375,
+        -4.76837158203125e-07,
+        6.7464494705200195
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        -0.0,
+        1.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "bounding_box": {
+        "min": [
+          -5.63323974609375,
+          -4.76837158203125e-07,
+          3.7651684284210205
+        ],
+        "max": [
+          -1.6085143089294434,
+          2.0807089805603027,
+          7.7464494705200195
+        ],
+        "radius": 3.0157240186577727
+      },
+      "collection_path": [
+        "Scene Collection",
+        "Collection"
+      ],
+      "asset_id": "base_road_cube"
+    },
+    {
+      "id": "rouge_005_a09f40",
+      "name": "Rouge.005",
+      "entity_type": "npc",
+      "position": [
+        -4.154645919799805,
+        2.0807089805603027,
+        5.225829124450684
       ],
       "rotation": [
         0.0,
@@ -98,7 +384,8 @@
         "children": {},
         "instances": [
           "square_water_detail_empty",
-          "square_water_detail_empty.001"
+          "square_water_detail_empty.001",
+          "square_water_detail_empty.002"
         ]
       }
     },
@@ -113,9 +400,9 @@
     "water_level": 0.0
   },
   "statistics": {
-    "total_instances": 2,
+    "total_instances": 9,
     "total_terrain": 0,
-    "total_assets": 1,
+    "total_assets": 2,
     "total_islands": 0
   }
 }
