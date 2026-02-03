@@ -28,3 +28,4 @@ dist/
 # Claude Code
 .claude/
 dependencies/
+level_tester/public/
