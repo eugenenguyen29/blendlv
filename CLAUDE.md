@@ -33,6 +33,58 @@ Zero tolerance. Fix pre-existing issues. No exceptions.
 - `level_tester/` - Three.js test viewer
 - `//exports/` - Export directory (relative to .blend)
 
+## Critical Gotchas
+
+**Terrain coordinates are WORLD-SPACE:** Terrain GLBs contain absolute world positions. Do NOT apply `Island.world_position` as a transform to terrain's parent group - this causes double-transformation. See `.claude/architecture/blender-data-schemas.md` section "CRITICAL: Terrain Coordinate Rules".
+
+## Code Style
+
+**Write expressive code. Comments are a last resort.**
+
+| Practice | Example |
+|----------|---------|
+| Name functions by what they do | `calculate_island_bounds()` not `process()` |
+| Name variables by what they hold | `active_npcs` not `data` or `tmp` |
+| Extract complex logic to named functions | `if is_within_spawn_radius()` not `if dist < r * 0.8` |
+| Use type hints as documentation | `def load(path: Path) -> Manifest:` |
+
+**Comments allowed only for:**
+- Non-obvious business rules or domain knowledge
+- Workarounds with linked issue/bug references
+- Legal/license headers
+
+**Never comment:**
+- What the code does (make the code say it)
+- Obvious operations
+- Section dividers or TODOs
+
+## Tree Shaking Rules
+
+**Use `import.meta.env.DEV` to exclude dev-only code from production builds:**
+
+```typescript
+// ✅ Good - entire block eliminated in production
+if (import.meta.env.DEV) {
+  console.log('debug:', data);
+  showCollisionBoxes();
+}
+
+// ✅ Good - dynamic import for larger dev modules
+if (import.meta.env.DEV) {
+  const { DevTools } = await import('./dev/DevTools');
+  DevTools.init();
+}
+
+// ❌ Bad - dev code always bundled
+console.log('debug:', data);
+debugVisualize(mesh);
+```
+
+**Rules:**
+1. Wrap all debug logs, dev UI, and diagnostic code in `if (import.meta.env.DEV)` blocks
+2. Use dynamic imports for larger dev-only modules to ensure complete elimination
+3. Never call dev functions outside of DEV guards
+
 ## Commit Rules
 
 **Keep code and tests together in the same commit:**

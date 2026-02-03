@@ -114,8 +114,10 @@ export class WorldLoader {
     group.userData.islandId = island.id;
     group.userData.island = island;
 
-    // Apply world transform
-    this.applyTransform(group, island.world_position, island.world_rotation);
+    // NOTE: We do NOT apply world_position/rotation to the island group.
+    // The terrain GLB files already contain geometry in world space coordinates.
+    // The island's world_position is stored in userData for reference (camera focus, etc.)
+    // but should not be used as a transform since it would double-transform the terrain.
 
     // Load terrain using TerrainLoader
     try {

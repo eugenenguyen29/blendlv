@@ -38,6 +38,10 @@ class LevelTester {
   private entityLoader: EntityLoader | null = null;
   private npcs: Map<string, LoadedNPC> = new Map();
 
+  // Dev-only keyboard movement (dynamically loaded)
+  private keyboardMovement: { update(delta: number): void } | null = null;
+  private lastTime = 0;
+
   constructor() {
     // Loading screen (must be first)
     this.loadingScreen = new LoadingScreen();
@@ -78,7 +82,7 @@ class LevelTester {
     this.renderer.setPixelRatio(window.devicePixelRatio);
     document.getElementById("app")!.appendChild(this.renderer.domElement);
 
-    // Controls
+    // Camera controls (OrbitControls for landscape debugging)
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     this.controls.enableDamping = true;
     this.controls.dampingFactor = 0.05;
@@ -91,6 +95,13 @@ class LevelTester {
 
     // Events
     window.addEventListener("resize", this.onResize.bind(this));
+
+    // Dev-only keyboard movement (WASD + QE)
+    if (import.meta.env.DEV) {
+      import("./dev/KeyboardMovement").then(({ KeyboardMovement }) => {
+        this.keyboardMovement = new KeyboardMovement(this.camera, this.controls);
+      });
+    }
 
     // Mark initialization complete
     this.loadingScreen.startPhase("Initializing");
@@ -126,7 +137,9 @@ class LevelTester {
    * Load a level from the given path
    */
   async loadLevel(levelPath: string): Promise<void> {
-    console.log(`Loading level from: ${levelPath}`);
+    if (import.meta.env.DEV) {
+      console.log(`Loading level from: ${levelPath}`);
+    }
 
     try {
       // Phase 1: Load manifest
@@ -135,12 +148,14 @@ class LevelTester {
       const manifest = await this.manifestLoader.load();
       this.loadingScreen.setPhaseProgress(1);
 
-      console.log("Manifest loaded:", manifest);
-      console.log(`  - ${manifest.statistics.total_instances} instances`);
-      console.log(
-        `  - ${manifest.statistics.total_terrain ?? manifest.terrain_objects.length} terrain objects`
-      );
-      console.log(`  - ${Object.keys(manifest.islands).length} islands`);
+      if (import.meta.env.DEV) {
+        console.log("Manifest loaded:", manifest);
+        console.log(`  - ${manifest.statistics.total_instances} instances`);
+        console.log(
+          `  - ${manifest.statistics.total_terrain ?? manifest.terrain_objects.length} terrain objects`
+        );
+        console.log(`  - ${Object.keys(manifest.islands).length} islands`);
+      }
 
       // Phase 2: Load world geometry
       this.loadingScreen.startPhase("Loading world");
@@ -177,7 +192,7 @@ class LevelTester {
       this.npcs = entityResult.npcs;
 
       // Log NPC dialog info
-      if (this.npcs.size > 0) {
+      if (import.meta.env.DEV && this.npcs.size > 0) {
         console.log(`Loaded ${this.npcs.size} NPCs with dialog:`);
         for (const [id, npc] of this.npcs) {
           console.log(
@@ -190,7 +205,7 @@ class LevelTester {
       }
 
       // Log interactive objects
-      if (entityResult.interactives.size > 0) {
+      if (import.meta.env.DEV && entityResult.interactives.size > 0) {
         console.log(
           `Loaded ${entityResult.interactives.size} interactive objects:`
         );
@@ -206,7 +221,9 @@ class LevelTester {
       this.focusOnBounds(worldResult.bounds);
       this.loadingScreen.setPhaseProgress(1);
 
-      console.log("Level loaded successfully!");
+      if (import.meta.env.DEV) {
+        console.log("Level loaded successfully!");
+      }
       this.loadingScreen.complete();
     } catch (error) {
       console.error("Failed to load level:", error);
@@ -227,7 +244,6 @@ class LevelTester {
     bounds.getSize(size);
     const maxDim = Math.max(size.x, size.y, size.z);
 
-    // Position camera to see the whole scene
     const distance = maxDim * 1.5;
     this.camera.position.set(
       center.x + distance,
@@ -245,7 +261,12 @@ class LevelTester {
   }
 
   private animate(): void {
+    const now = performance.now();
+    const delta = (now - this.lastTime) / 1000;
+    this.lastTime = now;
+
     requestAnimationFrame(this.animate.bind(this));
+    this.keyboardMovement?.update(delta);
     this.controls.update();
     this.renderer.render(this.scene, this.camera);
   }
