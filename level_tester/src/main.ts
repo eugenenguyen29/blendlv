@@ -17,7 +17,7 @@ import {
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { ManifestLoader, EntityLoader, registerDefaultHandlers, type LoadedNPC } from "./loaders";
 import { WorldLoader } from "./world";
-import { LoadingScreen, SettingsPanel } from "./ui";
+import { LoadingScreen } from "./ui";
 import { setConfig, config } from "./config";
 
 // Register entity handlers before loading
@@ -32,7 +32,6 @@ class LevelTester {
   private renderer: WebGLRenderer;
   private controls: OrbitControls;
   private loadingScreen: LoadingScreen;
-  private settingsPanel: SettingsPanel;
   private manifestLoader: ManifestLoader | null = null;
   private worldLoader: WorldLoader | null = null;
   private entityLoader: EntityLoader | null = null;
@@ -46,15 +45,6 @@ class LevelTester {
     // Loading screen (must be first)
     this.loadingScreen = new LoadingScreen();
 
-    // Settings panel for terrain mode
-    this.settingsPanel = new SettingsPanel((mode) => {
-      setConfig({ terrainMode: mode });
-      if (confirm(`Terrain mode changed to "${mode}". Reload page to apply?`)) {
-        window.location.reload();
-      }
-    });
-    this.settingsPanel.setTerrainMode(config.terrainMode);
-    this.settingsPanel.mount(document.body);
     this.loadingScreen.setPhases([
       { name: "Initializing", weight: 1 },
       { name: "Loading manifest", weight: 1 },
@@ -100,6 +90,22 @@ class LevelTester {
     if (import.meta.env.DEV) {
       import("./dev/KeyboardMovement").then(({ KeyboardMovement }) => {
         this.keyboardMovement = new KeyboardMovement(this.camera, this.controls);
+      });
+    }
+
+    // Dev-only popup menu
+    if (import.meta.env.DEV) {
+      import("./dev/DevMenu").then(({ DevMenu }) => {
+        const devMenu = new DevMenu({
+          onTerrainModeChange: (mode) => {
+            setConfig({ terrainMode: mode });
+            if (confirm(`Terrain mode changed to "${mode}". Reload page to apply?`)) {
+              window.location.reload();
+            }
+          },
+          initialTerrainMode: config.terrainMode,
+        });
+        devMenu.mount(document.body);
       });
     }
 
