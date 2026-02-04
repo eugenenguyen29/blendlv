@@ -14,12 +14,20 @@ export interface TabDefinition {
   content: TabContent;
 }
 
+interface ButtonHandlers {
+  mouseenter: () => void;
+  mouseleave: () => void;
+  click: () => void;
+}
+
 export class TabContainer {
   private container: HTMLDivElement;
+  private sidebar: HTMLDivElement;
   private contentArea: HTMLDivElement;
   private tabs: TabDefinition[];
   private activeTabId: string;
   private buttonMap: Map<string, HTMLButtonElement> = new Map();
+  private buttonHandlers: Map<HTMLButtonElement, ButtonHandlers> = new Map();
 
   constructor(tabs: TabDefinition[]) {
     this.tabs = tabs;
@@ -28,10 +36,10 @@ export class TabContainer {
     this.container = document.createElement("div");
     this.container.style.cssText = "display: flex; flex: 1; overflow: hidden;";
 
-    const sidebar = this.createSidebar();
+    this.sidebar = this.createSidebar();
     this.contentArea = this.createContentArea();
 
-    this.container.appendChild(sidebar);
+    this.container.appendChild(this.sidebar);
     this.container.appendChild(this.contentArea);
 
     this.renderActiveTabContent();
@@ -57,19 +65,24 @@ export class TabContainer {
     const isActive = tab.id === this.activeTabId;
     this.applyButtonStyles(button, isActive);
 
-    button.addEventListener("mouseenter", () => {
-      if (tab.id !== this.activeTabId) {
-        applyStyles(button, mergeStyles(STYLES.tabButton.base, STYLES.tabButton.hover));
-      }
-    });
+    const handlers: ButtonHandlers = {
+      mouseenter: () => {
+        if (tab.id !== this.activeTabId) {
+          applyStyles(button, mergeStyles(STYLES.tabButton.base, STYLES.tabButton.hover));
+        }
+      },
+      mouseleave: () => {
+        this.applyButtonStyles(button, tab.id === this.activeTabId);
+      },
+      click: () => {
+        this.setActiveTab(tab.id);
+      },
+    };
 
-    button.addEventListener("mouseleave", () => {
-      this.applyButtonStyles(button, tab.id === this.activeTabId);
-    });
-
-    button.addEventListener("click", () => {
-      this.setActiveTab(tab.id);
-    });
+    this.buttonHandlers.set(button, handlers);
+    button.addEventListener("mouseenter", handlers.mouseenter);
+    button.addEventListener("mouseleave", handlers.mouseleave);
+    button.addEventListener("click", handlers.click);
 
     return button;
   }
@@ -132,10 +145,23 @@ export class TabContainer {
     return this.activeTabId;
   }
 
+  addTab(tab: TabDefinition): void {
+    this.tabs.push(tab);
+    const button = this.createTabButton(tab);
+    this.buttonMap.set(tab.id, button);
+    this.sidebar.appendChild(button);
+  }
+
   dispose(): void {
     for (const tab of this.tabs) {
       tab.content.dispose?.();
     }
+    for (const [button, handlers] of this.buttonHandlers) {
+      button.removeEventListener("mouseenter", handlers.mouseenter);
+      button.removeEventListener("mouseleave", handlers.mouseleave);
+      button.removeEventListener("click", handlers.click);
+    }
+    this.buttonHandlers.clear();
     this.buttonMap.clear();
   }
 }

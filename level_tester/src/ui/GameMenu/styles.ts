@@ -1,5 +1,5 @@
 /**
- * CSS-in-JS styles for DevMenu component
+ * CSS-in-JS styles for GameMenu component
  */
 
 export const STYLES = {

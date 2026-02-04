@@ -1,12 +1,6 @@
-import { getAvailableTerrainModes, type TerrainRenderMode } from "../../../config";
-import { applyStyles, STYLES } from "../styles";
-
-export interface TabContent {
-  render(): HTMLElement;
-  onActivate?(): void;
-  onDeactivate?(): void;
-  dispose?(): void;
-}
+import { getAvailableTerrainModes, type TerrainRenderMode } from "../../config";
+import { applyStyles, STYLES } from "../../ui/GameMenu/styles";
+import type { TabContent } from "../../ui/GameMenu/TabContainer";
 
 interface TerrainModeOption {
   value: TerrainRenderMode;
@@ -20,7 +14,7 @@ const TERRAIN_MODE_OPTIONS: TerrainModeOption[] = [
   { value: "group", label: "Group", description: "Debug mode" },
 ];
 
-export class SettingsTab implements TabContent {
+export class DevTab implements TabContent {
   private select: HTMLSelectElement | null = null;
   private readonly onTerrainModeChange: (mode: TerrainRenderMode) => void;
   private readonly initialMode: TerrainRenderMode;
@@ -43,7 +37,7 @@ export class SettingsTab implements TabContent {
     const container = document.createElement("div");
 
     const sectionHeader = document.createElement("h3");
-    sectionHeader.textContent = "Terrain";
+    sectionHeader.textContent = "Terrain Debug";
     sectionHeader.style.cssText = `
       margin: 0 0 16px 0;
       font-size: 16px;
@@ -52,7 +46,7 @@ export class SettingsTab implements TabContent {
     `;
     container.appendChild(sectionHeader);
 
-    const selectId = "settings-terrain-mode";
+    const selectId = "dev-terrain-mode";
 
     const label = document.createElement("label");
     label.textContent = "Terrain Mode";

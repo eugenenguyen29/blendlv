@@ -31,10 +31,24 @@ export function getAvailableTerrainModes(): readonly TerrainRenderMode[] {
 }
 
 /**
+ * Read persisted terrain mode from localStorage
+ */
+function getPersistedTerrainMode(): TerrainRenderMode | null {
+  if (typeof localStorage === "undefined") return null;
+  const stored = localStorage.getItem("terrainMode");
+  if (stored === "merged" || stored === "batched" || stored === "group") {
+    return stored;
+  }
+  return null;
+}
+
+const persistedTerrainMode = getPersistedTerrainMode();
+
+/**
  * Default configuration based on build mode
  */
 export const defaultConfig: RuntimeConfig = {
-  terrainMode: import.meta.env.PROD ? "merged" : "group",
+  terrainMode: persistedTerrainMode ?? (import.meta.env.DEV ? "group" : "merged"),
   debug: import.meta.env.DEV,
 };
 

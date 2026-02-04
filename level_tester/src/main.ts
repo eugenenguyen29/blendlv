@@ -17,7 +17,7 @@ import {
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { ManifestLoader, EntityLoader, registerDefaultHandlers, type LoadedNPC } from "./loaders";
 import { WorldLoader } from "./world";
-import { LoadingScreen } from "./ui";
+import { LoadingScreen, GameMenu } from "./ui";
 import { setConfig, config } from "./config";
 
 // Register entity handlers before loading
@@ -32,6 +32,7 @@ class LevelTester {
   private renderer: WebGLRenderer;
   private controls: OrbitControls;
   private loadingScreen: LoadingScreen;
+  private gameMenu: GameMenu | null = null;
   private manifestLoader: ManifestLoader | null = null;
   private worldLoader: WorldLoader | null = null;
   private entityLoader: EntityLoader | null = null;
@@ -93,19 +94,29 @@ class LevelTester {
       });
     }
 
-    // Dev-only popup menu
+    // Game menu (production feature)
+    this.gameMenu = new GameMenu();
+    this.gameMenu.mount(document.body);
+
+    // Dev-only: Add Dev tab with terrain mode selector
     if (import.meta.env.DEV) {
-      import("./dev/DevMenu").then(({ DevMenu }) => {
-        const devMenu = new DevMenu({
-          onTerrainModeChange: (mode) => {
+      import("./dev/DevMenu").then(({ DevTab }) => {
+        const devTab = new DevTab(
+          (mode) => {
             setConfig({ terrainMode: mode });
-            if (confirm(`Terrain mode changed to "${mode}". Reload page to apply?`)) {
+            localStorage.setItem("terrainMode", mode);
+            if (confirm(`Terrain mode changed to "${mode}". Reload?`)) {
               window.location.reload();
             }
           },
-          initialTerrainMode: config.terrainMode,
+          config.terrainMode
+        );
+        this.gameMenu?.addTab({
+          id: "dev",
+          label: "Dev",
+          icon: "\u{1F6E0}\u{FE0F}",
+          content: devTab,
         });
-        devMenu.mount(document.body);
       });
     }
 

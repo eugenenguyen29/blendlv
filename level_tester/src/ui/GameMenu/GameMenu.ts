@@ -1,14 +1,12 @@
-import type { TerrainRenderMode } from "../../config";
 import { STYLES, applyStyles, mergeStyles } from "./styles";
 import { TabContainer, type TabDefinition } from "./TabContainer";
 import { SettingsTab } from "./tabs/SettingsTab";
 
-export interface DevMenuConfig {
-  onTerrainModeChange: (mode: TerrainRenderMode) => void;
-  initialTerrainMode: TerrainRenderMode;
+export interface GameMenuConfig {
+  initialTabs?: TabDefinition[];
 }
 
-export class DevMenu {
+export class GameMenu {
   private backdrop: HTMLDivElement;
   private modal: HTMLDivElement;
   private tabContainer: TabContainer;
@@ -31,19 +29,16 @@ export class DevMenu {
     }
   };
 
-  constructor(config: DevMenuConfig) {
+  constructor(config: GameMenuConfig = {}) {
     this.backdrop = document.createElement("div");
     applyStyles(this.backdrop, STYLES.backdrop.base);
 
     this.modal = document.createElement("div");
     applyStyles(this.modal, STYLES.modal.base);
 
-    const settingsTab = new SettingsTab(
-      config.onTerrainModeChange,
-      config.initialTerrainMode
-    );
+    const settingsTab = new SettingsTab();
 
-    const tabs: TabDefinition[] = [
+    const tabs: TabDefinition[] = config.initialTabs ?? [
       {
         id: "settings",
         label: "Settings",
@@ -64,14 +59,18 @@ export class DevMenu {
   }
 
   unmount(): void {
+    document.removeEventListener("keydown", this.handleKeydown);
+    this.backdrop.removeEventListener("click", this.handleBackdropClick);
     this.backdrop.remove();
   }
 
   dispose(): void {
-    document.removeEventListener("keydown", this.handleKeydown);
-    this.backdrop.removeEventListener("click", this.handleBackdropClick);
     this.unmount();
     this.tabContainer.dispose();
+  }
+
+  addTab(tab: TabDefinition): void {
+    this.tabContainer.addTab(tab);
   }
 
   open(): void {
