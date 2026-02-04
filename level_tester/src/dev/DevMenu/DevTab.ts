@@ -71,7 +71,16 @@ export class DevTab implements TabContent {
       select.appendChild(option);
     }
 
-    select.value = this.initialMode;
+    const validInitialMode = options.some((opt) => opt.value === this.initialMode)
+      ? this.initialMode
+      : options[0]?.value ?? "merged";
+
+    select.value = validInitialMode;
+
+    if (validInitialMode !== this.initialMode) {
+      this.onTerrainModeChange(validInitialMode);
+    }
+
     select.addEventListener("change", this.handleChange);
     container.appendChild(select);
 

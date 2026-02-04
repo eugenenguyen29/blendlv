@@ -13,7 +13,19 @@ export class GameMenu {
   private isOpen = false;
   private animating = false;
 
+  private isFormElement(target: EventTarget | null): boolean {
+    if (!(target instanceof HTMLElement)) return false;
+    const tagName = target.tagName;
+    return (
+      tagName === "INPUT" ||
+      tagName === "TEXTAREA" ||
+      tagName === "SELECT" ||
+      target.isContentEditable
+    );
+  }
+
   private handleKeydown = (e: KeyboardEvent): void => {
+    if (this.isFormElement(e.target)) return;
     if (e.key === "Escape" && this.isOpen) {
       e.preventDefault();
       this.close();

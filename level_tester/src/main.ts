@@ -104,7 +104,11 @@ class LevelTester {
         const devTab = new DevTab(
           (mode) => {
             setConfig({ terrainMode: mode });
-            localStorage.setItem("terrainMode", mode);
+            try {
+              localStorage.setItem("terrainMode", mode);
+            } catch {
+              // Ignore storage failures
+            }
             if (confirm(`Terrain mode changed to "${mode}". Reload?`)) {
               window.location.reload();
             }

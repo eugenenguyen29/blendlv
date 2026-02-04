@@ -146,10 +146,16 @@ export class TabContainer {
   }
 
   addTab(tab: TabDefinition): void {
+    const shouldActivate = this.activeTabId === "";
+
     this.tabs.push(tab);
     const button = this.createTabButton(tab);
     this.buttonMap.set(tab.id, button);
     this.sidebar.appendChild(button);
+
+    if (shouldActivate) {
+      this.setActiveTab(tab.id);
+    }
   }
 
   dispose(): void {

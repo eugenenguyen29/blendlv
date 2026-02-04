@@ -35,11 +35,18 @@ export function getAvailableTerrainModes(): readonly TerrainRenderMode[] {
  */
 function getPersistedTerrainMode(): TerrainRenderMode | null {
   if (typeof localStorage === "undefined") return null;
-  const stored = localStorage.getItem("terrainMode");
-  if (stored === "merged" || stored === "batched" || stored === "group") {
-    return stored;
+  try {
+    const stored = localStorage.getItem("terrainMode");
+    if (stored === "merged" || stored === "batched" || stored === "group") {
+      const available = getAvailableTerrainModes();
+      if (available.includes(stored)) {
+        return stored;
+      }
+    }
+    return null;
+  } catch {
+    return null;
   }
-  return null;
 }
 
 const persistedTerrainMode = getPersistedTerrainMode();
