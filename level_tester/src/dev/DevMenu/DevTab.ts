@@ -91,6 +91,8 @@ export class DevTab implements TabContent {
 
   setTerrainMode(mode: TerrainRenderMode): void {
     if (this.select) {
+      const availableModes = getAvailableTerrainModes();
+      if (!availableModes.includes(mode)) return;
       this.select.value = mode;
     }
   }

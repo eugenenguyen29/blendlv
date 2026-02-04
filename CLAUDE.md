@@ -102,7 +102,8 @@ Never separate implementation changes from their corresponding test changes.
 
 | Task Domain | Subagent Type | Auto-loaded Skills |
 |-------------|---------------|-------------------|
-| Three.js / React / R3F | `react-specialist` | `react`, `threejs-react` |
+| Three.js / React / R3F | `react-specialist` | `react`, `threejs-react`, `browser-defensive` |
+| Browser TypeScript (UI, menus, storage) | `react-specialist` | `browser-defensive` |
 | Blender tests | `python-pro` | `blender-testing` |
 
 **Note:** Skills defined in `~/.claude/agents/<agent>.md` frontmatter are automatically injected into subagent context. No need to include "Read skill file first" in prompts.

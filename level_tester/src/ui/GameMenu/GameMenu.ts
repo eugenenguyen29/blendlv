@@ -48,14 +48,12 @@ export class GameMenu {
     this.modal = document.createElement("div");
     applyStyles(this.modal, STYLES.modal.base);
 
-    const settingsTab = new SettingsTab();
-
     const tabs: TabDefinition[] = config.initialTabs ?? [
       {
         id: "settings",
         label: "Settings",
         icon: "⚙️",
-        content: settingsTab,
+        content: new SettingsTab(),
       },
     ];
 
