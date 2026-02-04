@@ -17,7 +17,7 @@ import {
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { ManifestLoader, EntityLoader, registerDefaultHandlers, type LoadedNPC } from "./loaders";
 import { WorldLoader } from "./world";
-import { LoadingScreen, SettingsPanel } from "./ui";
+import { LoadingScreen, GameMenu } from "./ui";
 import { setConfig, config } from "./config";
 
 // Register entity handlers before loading
@@ -32,7 +32,7 @@ class LevelTester {
   private renderer: WebGLRenderer;
   private controls: OrbitControls;
   private loadingScreen: LoadingScreen;
-  private settingsPanel: SettingsPanel;
+  private gameMenu: GameMenu | null = null;
   private manifestLoader: ManifestLoader | null = null;
   private worldLoader: WorldLoader | null = null;
   private entityLoader: EntityLoader | null = null;
@@ -46,15 +46,6 @@ class LevelTester {
     // Loading screen (must be first)
     this.loadingScreen = new LoadingScreen();
 
-    // Settings panel for terrain mode
-    this.settingsPanel = new SettingsPanel((mode) => {
-      setConfig({ terrainMode: mode });
-      if (confirm(`Terrain mode changed to "${mode}". Reload page to apply?`)) {
-        window.location.reload();
-      }
-    });
-    this.settingsPanel.setTerrainMode(config.terrainMode);
-    this.settingsPanel.mount(document.body);
     this.loadingScreen.setPhases([
       { name: "Initializing", weight: 1 },
       { name: "Loading manifest", weight: 1 },
@@ -100,6 +91,36 @@ class LevelTester {
     if (import.meta.env.DEV) {
       import("./dev/KeyboardMovement").then(({ KeyboardMovement }) => {
         this.keyboardMovement = new KeyboardMovement(this.camera, this.controls);
+      });
+    }
+
+    // Game menu (production feature)
+    this.gameMenu = new GameMenu();
+    this.gameMenu.mount(document.body);
+
+    // Dev-only: Add Dev tab with terrain mode selector
+    if (import.meta.env.DEV) {
+      import("./dev/DevMenu").then(({ DevTab }) => {
+        const devTab = new DevTab(
+          (mode) => {
+            setConfig({ terrainMode: mode });
+            try {
+              localStorage.setItem("terrainMode", mode);
+            } catch {
+              // Ignore storage failures
+            }
+            if (confirm(`Terrain mode changed to "${mode}". Reload?`)) {
+              window.location.reload();
+            }
+          },
+          config.terrainMode
+        );
+        this.gameMenu?.addTab({
+          id: "dev",
+          label: "Dev",
+          icon: "\u{1F6E0}\u{FE0F}",
+          content: devTab,
+        });
       });
     }
 

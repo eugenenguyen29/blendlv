@@ -102,12 +102,26 @@ Never separate implementation changes from their corresponding test changes.
 
 | Task Domain | Subagent Type | Auto-loaded Skills |
 |-------------|---------------|-------------------|
-| Three.js / React / R3F | `react-specialist` | `react`, `threejs-react` |
+| Three.js / React / R3F | `react-specialist` | `react`, `threejs-react`, `browser-defensive` |
+| Browser TypeScript (UI, menus, storage) | `react-specialist` | `browser-defensive` |
 | Blender tests | `python-pro` | `blender-testing` |
 
 **Note:** Skills defined in `~/.claude/agents/<agent>.md` frontmatter are automatically injected into subagent context. No need to include "Read skill file first" in prompts.
 
 **MCP tools (Context7) require foreground mode** - background subagents cannot use MCP.
+
+## Agent Workflow (MANDATORY)
+
+**All coding tasks MUST follow this workflow:**
+
+1. **Delegate** - Spawn coding agents for implementation (never code directly)
+2. **Review** - `code-reviewer` agent checks every completed task
+3. **Verify** - All tests must pass before sign-off:
+   - Unit tests: `uv run pytest -x -v` (Python) / `npm test` (TS)
+   - E2E tests: `uv run python tests/e2e/find_blender.py`
+4. **Iterate** - On test failure: spawn new agent to fix, repeat until green
+
+**No exceptions. No partial completions. Green CI or iterate.**
 
 ## Context7 (REQUIRED)
 
